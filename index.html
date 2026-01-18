@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Tapper 2026</title>
+    <style>
+        body { background: #000; color: white; text-align: center; font-family: sans-serif; margin: 0; overflow: hidden; touch-action: manipulation; }
+        .score { font-size: 48px; margin-top: 50px; color: #f39c12; }
+        #coin { width: 80vw; max-width: 300px; margin-top: 30px; border-radius: 50%; border: 5px solid #f39c12; transition: transform 0.1s; }
+        #coin:active { transform: scale(0.9); }
+        .hit-text { position: absolute; color: red; font-weight: bold; animation: fly 0.6s ease-out forwards; pointer-events: none; }
+        @keyframes fly { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-100px); } }
+    </style>
+</head>
+<body>
+    <div class="score">💰 <span id="balance">0</span></div>
+    <!-- Замени ссылку ниже на свою фотографию -->
+    <img id="coin" src="https://drive.google.com/file/d/1_Um_urrnEunLB-cwTJtlf9nlkxqdAQXG/view?usp=sharing" alt="TAP">
+
+    <script src="https://telegram.org"></script>
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand(); // Развернуть на весь экран
+
+        let coins = 0;
+        const balanceEl = document.getElementById('balance');
+        const coinImg = document.getElementById('coin');
+
+        coinImg.addEventListener('click', (e) => {
+            // Шанс 2% (1 из 50) получить мячом
+            if (Math.random() < 0.02) {
+                let penalty = Math.floor(coins * 0.1) + 5;
+                coins = Math.max(0, coins - penalty);
+                spawnText(e.pageX, e.pageY, "МЯЧ В ЛИЦО! -" + penalty);
+                tg.HapticFeedback.notificationOccurred('error'); // Вибрация
+            } else {
+                coins += 1;
+                tg.HapticFeedback.impactOccurred('medium'); // Легкая вибрация
+            }
+            balanceEl.innerText = coins;
+        });
+
+        function spawnText(x, y, text) {
+            const el = document.createElement('div');
+            el.className = 'hit-text';
+            el.style.left = x + 'px';
+            el.style.top = y + 'px';
+            el.innerText = text;
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 600);
+        }
+    </script>
+</body>
+</html>
