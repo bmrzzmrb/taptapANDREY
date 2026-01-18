@@ -4,101 +4,86 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Tapper 2026</title>
-    <!-- Подключаем скрипт Telegram правильно -->
+    <!-- ПРОВЕРЬ ЭТУ ССЫЛКУ, ОНА ДОЛЖНА БЫТЬ ТАКОЙ -->
     <script src="https://telegram.org"></script>
     <style>
-        body { background: #1a1a1a; color: white; text-align: center; font-family: 'Arial', sans-serif; margin: 0; touch-action: manipulation; user-select: none; }
-        .header { padding: 20px; font-size: 24px; color: #ffd700; font-weight: bold; }
-        .stats { display: flex; justify-content: space-around; background: #252525; padding: 10px; margin: 10px; border-radius: 15px; }
-        #coin { 
-            width: 200px; height: 200px; border-radius: 50%; 
-            margin-top: 30px; border: 5px solid #ffd700; 
-            cursor: pointer; transition: transform 0.1s;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
-            object-fit: cover; /* Чтобы фото не сплющило */
+        body { 
+            background: #1a1a1a; color: white; text-align: center; 
+            font-family: sans-serif; margin: 0; overflow: hidden;
+            touch-action: manipulation; user-select: none;
         }
-        #coin:active { transform: scale(0.92); }
-        .shop-btn { background: #ffd700; color: black; border: none; padding: 15px 30px; border-radius: 10px; font-weight: bold; margin-top: 20px; cursor: pointer; }
-        .hit-text { position: absolute; color: #ff4444; font-weight: bold; animation: fly 0.6s forwards; pointer-events: none; z-index: 100; }
-        @keyframes fly { to { transform: translateY(-100px); opacity: 0; } }
+        .header { padding: 20px; font-size: 30px; color: #ffd700; }
+        #coin-zone {
+            display: flex; justify-content: center; align-items: center;
+            height: 300px; margin-top: 20px;
+        }
+        /* Стилизуем кнопку как большой золотой круг */
+        #tap-btn {
+            width: 200px; height: 200px; border-radius: 50%;
+            background: linear-gradient(145deg, #ffd700, #b8860b);
+            border: 8px solid #8b4513; font-size: 80px;
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            transition: transform 0.05s;
+        }
+        #tap-btn:active { transform: scale(0.9); }
+        .stats { margin-top: 20px; font-size: 18px; opacity: 0.8; }
+        .btn-upg { 
+            margin-top: 30px; padding: 15px 40px; border-radius: 10px;
+            border: none; background: #ffd700; font-weight: bold; cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <div class="header">💰 <span id="balance">0</span></div>
     
-    <div class="stats">
-        <div>Сила: <span id="power">1</span></div>
-        <div>Цена апдейта: <span id="cost">20</span></div>
+    <div id="coin-zone">
+        <!-- Вместо фото пока используем эмодзи внутри круга -->
+        <div id="tap-btn">📀</div>
     </div>
 
-    <!-- ИСПОЛЬЗУЕМ ПРЯМУЮ ССЫЛКУ НА ВАШЕ ФОТО -->
-    <img id="coin" src="https://lh3.googleusercontent.com" alt="TAP ME">
+    <div class="stats">
+        Сила клика: <span id="power">1</span><br>
+        Цена улучшения: <span id="cost">20</span>
+    </div>
 
-    <br>
-    <button class="shop-btn" onclick="buyUpgrade()">УЛУЧШИТЬ КЛИК 🚀</button>
+    <button class="btn-upg" onclick="buyUpgrade()">УЛУЧШИТЬ (🚀)</button>
 
     <script>
-        // Инициализация Telegram WebApp
         let tg = window.Telegram.WebApp;
-        tg.expand(); // Развернуть на весь экран
+        tg.expand();
 
-        // Загрузка данных из памяти телефона
         let coins = parseInt(localStorage.getItem('coins')) || 0;
         let power = parseInt(localStorage.getItem('power')) || 1;
         let cost = parseInt(localStorage.getItem('cost')) || 20;
 
-        const balanceEl = document.getElementById('balance');
-        const powerEl = document.getElementById('power');
-        const costEl = document.getElementById('cost');
-
-        function updateDisplay() {
-            balanceEl.innerText = coins;
-            powerEl.innerText = power;
-            costEl.innerText = cost;
+        function update() {
+            document.getElementById('balance').innerText = coins;
+            document.getElementById('power').innerText = power;
+            document.getElementById('cost').innerText = cost;
             localStorage.setItem('coins', coins);
             localStorage.setItem('power', power);
             localStorage.setItem('cost', cost);
         }
 
-        // Клик по фото
-        document.getElementById('coin').addEventListener('click', (e) => {
-            // Шанс 2% на "Мяч в лицо"
-            if (Math.random() < 0.02) {
-                let penalty = Math.floor(coins * 0.05) + 5;
-                coins = Math.max(0, coins - penalty);
-                showHit(e.pageX, e.pageY, "МЯЧ В ЛИЦО! -" + penalty);
-                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
-            } else {
-                coins += power;
-                if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-            }
-            updateDisplay();
-        });
+        document.getElementById('tap-btn').onclick = function() {
+            coins += power;
+            update();
+            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+        };
 
         function buyUpgrade() {
             if (coins >= cost) {
                 coins -= cost;
                 power += 1;
-                cost = Math.floor(cost * 1.8);
-                updateDisplay();
-                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+                cost *= 2;
+                update();
             } else {
-                tg.showAlert("Недостаточно монет! Нужно еще " + (cost - coins));
+                tg.showAlert("Не хватает монет!");
             }
         }
 
-        function showHit(x, y, text) {
-            const div = document.createElement('div');
-            div.className = 'hit-text';
-            div.style.left = x + 'px';
-            div.style.top = y + 'px';
-            div.innerText = text;
-            document.body.appendChild(div);
-            setTimeout(() => div.remove(), 600);
-        }
-
-        // Первоначальное обновление экрана
-        updateDisplay();
+        update();
     </script>
 </body>
 </html>
