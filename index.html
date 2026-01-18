@@ -4,22 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Tapper 2026</title>
+    <!-- Подключаем скрипт Telegram правильно -->
+    <script src="https://telegram.org"></script>
     <style>
         body { background: #1a1a1a; color: white; text-align: center; font-family: 'Arial', sans-serif; margin: 0; touch-action: manipulation; user-select: none; }
         .header { padding: 20px; font-size: 24px; color: #ffd700; font-weight: bold; }
         .stats { display: flex; justify-content: space-around; background: #252525; padding: 10px; margin: 10px; border-radius: 15px; }
-        
-        /* Главная кнопка-фото */
         #coin { 
             width: 200px; height: 200px; border-radius: 50%; 
             margin-top: 30px; border: 5px solid #ffd700; 
             cursor: pointer; transition: transform 0.1s;
             box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+            object-fit: cover; /* Чтобы фото не сплющило */
         }
         #coin:active { transform: scale(0.92); }
-
         .shop-btn { background: #ffd700; color: black; border: none; padding: 15px 30px; border-radius: 10px; font-weight: bold; margin-top: 20px; cursor: pointer; }
-        .hit-text { position: absolute; color: #ff4444; font-weight: bold; animation: fly 0.6s forwards; pointer-events: none; }
+        .hit-text { position: absolute; color: #ff4444; font-weight: bold; animation: fly 0.6s forwards; pointer-events: none; z-index: 100; }
         @keyframes fly { to { transform: translateY(-100px); opacity: 0; } }
     </style>
 </head>
@@ -28,20 +28,21 @@
     
     <div class="stats">
         <div>Сила: <span id="power">1</span></div>
-        <div>Улучшение: <span id="cost">20</span></div>
+        <div>Цена апдейта: <span id="cost">20</span></div>
     </div>
 
-    <!-- В src вставь прямую ссылку на фото (заканчивающуюся на .jpg или .png) -->
-    <img id="coin" src="https://drive.google.com/file/d/1_Um_urrnEunLB-cwTJtlf9nlkxqdAQXG/view?usp=sharing" alt="TAP ME">
+    <!-- ИСПОЛЬЗУЕМ ПРЯМУЮ ССЫЛКУ НА ВАШЕ ФОТО -->
+    <img id="coin" src="https://lh3.googleusercontent.com" alt="TAP ME">
 
     <br>
     <button class="shop-btn" onclick="buyUpgrade()">УЛУЧШИТЬ КЛИК 🚀</button>
 
-    <script src="https://telegram.org"></script>
     <script>
+        // Инициализация Telegram WebApp
         let tg = window.Telegram.WebApp;
-        tg.expand();
+        tg.expand(); // Развернуть на весь экран
 
+        // Загрузка данных из памяти телефона
         let coins = parseInt(localStorage.getItem('coins')) || 0;
         let power = parseInt(localStorage.getItem('power')) || 1;
         let cost = parseInt(localStorage.getItem('cost')) || 20;
@@ -54,22 +55,22 @@
             balanceEl.innerText = coins;
             powerEl.innerText = power;
             costEl.innerText = cost;
-            // Сохраняем данные на телефоне, чтобы не обнулялись
             localStorage.setItem('coins', coins);
             localStorage.setItem('power', power);
             localStorage.setItem('cost', cost);
         }
 
+        // Клик по фото
         document.getElementById('coin').addEventListener('click', (e) => {
-            // Шанс 1 к 50: мяч в лицо
+            // Шанс 2% на "Мяч в лицо"
             if (Math.random() < 0.02) {
                 let penalty = Math.floor(coins * 0.05) + 5;
                 coins = Math.max(0, coins - penalty);
                 showHit(e.pageX, e.pageY, "МЯЧ В ЛИЦО! -" + penalty);
-                tg.HapticFeedback.notificationOccurred('error');
+                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
             } else {
                 coins += power;
-                tg.HapticFeedback.impactOccurred('light');
+                if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
             }
             updateDisplay();
         });
@@ -80,9 +81,9 @@
                 power += 1;
                 cost = Math.floor(cost * 1.8);
                 updateDisplay();
-                tg.HapticFeedback.notificationOccurred('success');
+                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
             } else {
-                tg.showAlert("Мало монет!");
+                tg.showAlert("Недостаточно монет! Нужно еще " + (cost - coins));
             }
         }
 
@@ -96,6 +97,7 @@
             setTimeout(() => div.remove(), 600);
         }
 
+        // Первоначальное обновление экрана
         updateDisplay();
     </script>
 </body>
