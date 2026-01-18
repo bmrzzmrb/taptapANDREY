@@ -1,119 +1,81 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Golden Clicker 2026</title>
-    <!-- Подключаем скрипт Telegram -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Clicker</title>
+    <!-- ПРОВЕРЬ, ЧТО ЭТА ССЫЛКА ЕСТЬ -->
     <script src="https://telegram.org"></script>
     <style>
-        body { 
-            background: radial-gradient(circle, #2c3e50, #000000); 
-            color: white; text-align: center; font-family: sans-serif; 
-            margin: 0; overflow: hidden; touch-action: none; user-select: none;
-        }
-        .header { padding-top: 50px; font-size: 48px; color: #ffd700; font-weight: bold; text-shadow: 0 0 20px rgba(255,214,0,0.5); }
+        body { background: #000; color: #fff; text-align: center; font-family: sans-serif; margin: 0; padding-top: 50px; user-select: none; -webkit-user-select: none; }
+        #balance { font-size: 50px; color: gold; margin-bottom: 20px; }
         
-        #coin-container {
-            display: flex; justify-content: center; align-items: center;
-            height: 300px;
-        }
-
-        /* Золотая монета (CSS вместо картинки для 100% загрузки) */
+        /* Твоя картинка */
         #coin {
             width: 200px; height: 200px; border-radius: 50%;
-            background: linear-gradient(135deg, #ffd700 0%, #b8860b 100%);
-            border: 8px solid #8b4513;
-            display: flex; justify-content: center; align-items: center;
-            font-size: 100px; cursor: pointer;
-            box-shadow: 0 0 50px rgba(255, 215, 0, 0.4);
-            transition: transform 0.05s;
+            border: 5px solid gold; cursor: pointer;
             -webkit-tap-highlight-color: transparent;
         }
+        #coin:active { transform: scale(0.9); }
         
-        .stats { margin-top: 20px; font-size: 22px; color: #ddd; }
-        .stats b { color: #ffd700; }
-
-        .btn-upg { 
-            margin-top: 30px; padding: 15px 50px; border-radius: 20px;
-            border: none; background: #ffd700; font-weight: bold; 
-            font-size: 20px; color: #000; cursor: pointer;
-            box-shadow: 0 5px 15px rgba(255,215,0,0.3);
-        }
+        .info { margin-top: 20px; font-size: 20px; }
+        button { margin-top: 20px; padding: 10px 20px; font-size: 18px; background: gold; border: none; border-radius: 10px; cursor: pointer; }
     </style>
 </head>
 <body>
-    <div class="header">💰 <span id="balance">0</span></div>
+
+    <div id="balance">0</div>
     
-    <div id="coin-container">
-        <!-- Большая золотая кнопка -->
-        <div id="coin">📀</div>
-    </div>
+    <!-- Прямая ссылка на твое фото -->
+    <img id="coin" src="https://allwebs.ru" alt="TAP">
 
-    <div class="stats">
-        Клик: <b id="power">1</b> | Цена: <b id="cost">20</b>
-    </div>
-
-    <button class="btn-upg" onclick="buyUpgrade()">УЛУЧШИТЬ 🚀</button>
+    <div class="info">Клик: <span id="pwr">1</span> | Цена: <span id="cst">20</span></div>
+    <button onclick="buy()">УЛУЧШИТЬ КЛИК</button>
 
     <script>
-        const tg = window.Telegram.WebApp;
-        tg.ready();
+        // Инициализация
+        let tg = window.Telegram.WebApp;
         tg.expand();
 
-        let coins = Number(localStorage.getItem('c_2026')) || 0;
-        let power = Number(localStorage.getItem('p_2026')) || 1;
-        let cost = Number(localStorage.getItem('cost_2026')) || 20;
+        let coins = Number(localStorage.getItem('bal')) || 0;
+        let power = Number(localStorage.getItem('pwr')) || 1;
+        let cost = Number(localStorage.getItem('cst')) || 20;
 
-        const balanceEl = document.getElementById('balance');
-        const powerEl = document.getElementById('power');
-        const costEl = document.getElementById('cost');
-        const coinBtn = document.getElementById('coin');
+        const balEl = document.getElementById('balance');
+        const pwrEl = document.getElementById('pwr');
+        const cstEl = document.getElementById('cst');
 
-        function updateUI() {
-            balanceEl.innerText = Math.floor(coins);
-            powerEl.innerText = power;
-            costEl.innerText = cost;
-            localStorage.setItem('c_2026', coins);
-            localStorage.setItem('p_2026', power);
-            localStorage.setItem('cost_2026', cost);
+        function update() {
+            balEl.innerText = Math.floor(coins);
+            pwrEl.innerText = power;
+            cstEl.innerText = cost;
+            localStorage.setItem('bal', coins);
+            localStorage.setItem('pwr', power);
+            localStorage.setItem('cst', cost);
         }
 
-        // Клик с защитой для мобильных
-        coinBtn.addEventListener('pointerdown', (e) => {
-            e.preventDefault();
-            coinBtn.style.transform = "scale(0.9)";
-            
-            // Шанс 2% на "Мяч в лицо"
-            if (Math.random() < 0.02) {
-                let loss = Math.floor(coins * 0.1) + 5;
-                coins = Math.max(0, coins - loss);
-                tg.showAlert("⚡️ МЯЧ В ЛИЦО! \nВы потеряли " + loss + " монет!");
-                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
-            } else {
-                coins += power;
-                if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+        // САМЫЙ ПРОСТОЙ КЛИК
+        document.getElementById('coin').onclick = function() {
+            coins += power;
+            update();
+            // Попробуем вызвать вибрацию
+            if (tg.HapticFeedback) {
+                tg.HapticFeedback.impactOccurred('medium');
             }
-            updateUI();
-        });
+        };
 
-        coinBtn.addEventListener('pointerup', () => {
-            coinBtn.style.transform = "scale(1)";
-        });
-
-        function buyUpgrade() {
+        function buy() {
             if (coins >= cost) {
                 coins -= cost;
                 power += 1;
-                cost = Math.floor(cost * 2);
-                updateUI();
-                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+                cost = cost * 2;
+                update();
             } else {
-                tg.showAlert("Мало монет!");
+                alert("Мало монет!");
             }
         }
 
-        updateUI();
+        update();
     </script>
 </body>
 </html>
