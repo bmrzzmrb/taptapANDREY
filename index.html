@@ -5,24 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://telegram.org"></script>
     <style>
-        body { background: #000; color: #fff; text-align: center; font-family: sans-serif; margin: 0; padding-top: 50px; touch-action: manipulation; }
+        body { background: #000; color: #fff; text-align: center; font-family: sans-serif; margin: 0; padding-top: 50px; overflow: hidden; touch-action: none; }
         #balance { font-size: 60px; color: gold; font-weight: bold; margin-bottom: 20px; }
         #coin {
-            width: 200px; height: 200px; border-radius: 100px;
-            background: orange; border: 8px solid white;
+            width: 200px; height: 200px; border-radius: 50%;
+            background: orange; border: 8px solid #fff;
             margin: 0 auto; display: flex; align-items: center; justify-content: center;
-            font-size: 100px; cursor: pointer; -webkit-tap-highlight-color: transparent;
+            font-size: 100px; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent;
         }
         #coin:active { transform: scale(0.9); }
-        button { margin-top: 30px; padding: 15px 30px; background: gold; border: none; border-radius: 10px; font-weight: bold; }
     </style>
 </head>
 <body>
     <div id="balance">0</div>
-    <!-- Клик прописан прямо здесь для надежности -->
-    <div id="coin" onclick="handleTap()">📀</div>
+    <!-- Используем ontouchstart для мгновенного клика на телефонах -->
+    <div id="coin" ontouchstart="handleTap()">📀</div>
     <div style="margin-top:20px;">Клик: <span id="pwr">1</span></div>
-    <button onclick="buy()">УЛУЧШИТЬ КЛИК</button>
 
     <script>
         let tg = window.Telegram.WebApp;
@@ -31,32 +29,20 @@
         let coins = Number(localStorage.getItem('coins')) || 0;
         let power = Number(localStorage.getItem('power')) || 1;
 
-        function update() {
+        function updateUI() {
             document.getElementById('balance').innerText = Math.floor(coins);
             document.getElementById('pwr').innerText = power;
             localStorage.setItem('coins', coins);
             localStorage.setItem('power', power);
         }
 
-        // Функция клика
         window.handleTap = function() {
             coins += power;
-            update();
+            updateUI();
             if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
         };
 
-        window.buy = function() {
-            let cost = power * 20;
-            if (coins >= cost) {
-                coins -= cost;
-                power += 1;
-                update();
-            } else {
-                alert("Мало монет! Нужно: " + cost);
-            }
-        };
-
-        update();
+        updateUI();
     </script>
 </body>
 </html>
