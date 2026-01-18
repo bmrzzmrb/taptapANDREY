@@ -1,55 +1,102 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Tapper 2026</title>
     <style>
-        body { background: #000; color: white; text-align: center; font-family: sans-serif; margin: 0; overflow: hidden; touch-action: manipulation; }
-        .score { font-size: 48px; margin-top: 50px; color: #f39c12; }
-        #coin { width: 80vw; max-width: 300px; margin-top: 30px; border-radius: 50%; border: 5px solid #f39c12; transition: transform 0.1s; }
-        #coin:active { transform: scale(0.9); }
-        .hit-text { position: absolute; color: red; font-weight: bold; animation: fly 0.6s ease-out forwards; pointer-events: none; }
-        @keyframes fly { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-100px); } }
+        body { background: #1a1a1a; color: white; text-align: center; font-family: 'Arial', sans-serif; margin: 0; touch-action: manipulation; user-select: none; }
+        .header { padding: 20px; font-size: 24px; color: #ffd700; font-weight: bold; }
+        .stats { display: flex; justify-content: space-around; background: #252525; padding: 10px; margin: 10px; border-radius: 15px; }
+        
+        /* Главная кнопка-фото */
+        #coin { 
+            width: 200px; height: 200px; border-radius: 50%; 
+            margin-top: 30px; border: 5px solid #ffd700; 
+            cursor: pointer; transition: transform 0.1s;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+        }
+        #coin:active { transform: scale(0.92); }
+
+        .shop-btn { background: #ffd700; color: black; border: none; padding: 15px 30px; border-radius: 10px; font-weight: bold; margin-top: 20px; cursor: pointer; }
+        .hit-text { position: absolute; color: #ff4444; font-weight: bold; animation: fly 0.6s forwards; pointer-events: none; }
+        @keyframes fly { to { transform: translateY(-100px); opacity: 0; } }
     </style>
 </head>
 <body>
-    <div class="score">💰 <span id="balance">0</span></div>
-    <!-- Замени ссылку ниже на свою фотографию -->
-    <img id="coin" src="https://drive.google.com/file/d/1_Um_urrnEunLB-cwTJtlf9nlkxqdAQXG/view?usp=sharing" alt="TAP">
+    <div class="header">💰 <span id="balance">0</span></div>
+    
+    <div class="stats">
+        <div>Сила: <span id="power">1</span></div>
+        <div>Улучшение: <span id="cost">20</span></div>
+    </div>
+
+    <!-- В src вставь прямую ссылку на фото (заканчивающуюся на .jpg или .png) -->
+    <img id="coin" src="https://drive.google.com/file/d/1_Um_urrnEunLB-cwTJtlf9nlkxqdAQXG/view?usp=sharing" alt="TAP ME">
+
+    <br>
+    <button class="shop-btn" onclick="buyUpgrade()">УЛУЧШИТЬ КЛИК 🚀</button>
 
     <script src="https://telegram.org"></script>
     <script>
         let tg = window.Telegram.WebApp;
-        tg.expand(); // Развернуть на весь экран
+        tg.expand();
 
-        let coins = 0;
+        let coins = parseInt(localStorage.getItem('coins')) || 0;
+        let power = parseInt(localStorage.getItem('power')) || 1;
+        let cost = parseInt(localStorage.getItem('cost')) || 20;
+
         const balanceEl = document.getElementById('balance');
-        const coinImg = document.getElementById('coin');
+        const powerEl = document.getElementById('power');
+        const costEl = document.getElementById('cost');
 
-        coinImg.addEventListener('click', (e) => {
-            // Шанс 2% (1 из 50) получить мячом
-            if (Math.random() < 0.02) {
-                let penalty = Math.floor(coins * 0.1) + 5;
-                coins = Math.max(0, coins - penalty);
-                spawnText(e.pageX, e.pageY, "МЯЧ В ЛИЦО! -" + penalty);
-                tg.HapticFeedback.notificationOccurred('error'); // Вибрация
-            } else {
-                coins += 1;
-                tg.HapticFeedback.impactOccurred('medium'); // Легкая вибрация
-            }
+        function updateDisplay() {
             balanceEl.innerText = coins;
+            powerEl.innerText = power;
+            costEl.innerText = cost;
+            // Сохраняем данные на телефоне, чтобы не обнулялись
+            localStorage.setItem('coins', coins);
+            localStorage.setItem('power', power);
+            localStorage.setItem('cost', cost);
+        }
+
+        document.getElementById('coin').addEventListener('click', (e) => {
+            // Шанс 1 к 50: мяч в лицо
+            if (Math.random() < 0.02) {
+                let penalty = Math.floor(coins * 0.05) + 5;
+                coins = Math.max(0, coins - penalty);
+                showHit(e.pageX, e.pageY, "МЯЧ В ЛИЦО! -" + penalty);
+                tg.HapticFeedback.notificationOccurred('error');
+            } else {
+                coins += power;
+                tg.HapticFeedback.impactOccurred('light');
+            }
+            updateDisplay();
         });
 
-        function spawnText(x, y, text) {
-            const el = document.createElement('div');
-            el.className = 'hit-text';
-            el.style.left = x + 'px';
-            el.style.top = y + 'px';
-            el.innerText = text;
-            document.body.appendChild(el);
-            setTimeout(() => el.remove(), 600);
+        function buyUpgrade() {
+            if (coins >= cost) {
+                coins -= cost;
+                power += 1;
+                cost = Math.floor(cost * 1.8);
+                updateDisplay();
+                tg.HapticFeedback.notificationOccurred('success');
+            } else {
+                tg.showAlert("Мало монет!");
+            }
         }
+
+        function showHit(x, y, text) {
+            const div = document.createElement('div');
+            div.className = 'hit-text';
+            div.style.left = x + 'px';
+            div.style.top = y + 'px';
+            div.innerText = text;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 600);
+        }
+
+        updateDisplay();
     </script>
 </body>
 </html>
