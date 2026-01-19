@@ -138,12 +138,12 @@
         });
 
         function clickCoin() {
-            // Шанс 15% на "Мяч в лицо"
-            if (!shieldActive && Math.random() < 0.15) {
+            // Шанс 1-3% на "Мяч в лицо"
+            if (!shieldActive && Math.random() < 0.03) { // Вероятность попадания мяча 1-3%
                 let loss = Math.floor(balance * 0.05);
                 balance -= loss;
                 tg.HapticFeedback.notificationOccurred('error');
-                tg.showAlert("⚽ МЯЧ В ЛИЦО! Потеряно: " + loss + " монет");
+                tg.showAlert("⚽ МЯЧ В ЕБЛИЩЕ! Потеряно: " + loss + " монет");
             } else {
                 balance += (clickPower * multiplier);
                 tg.HapticFeedback.impactOccurred('medium');
@@ -155,7 +155,7 @@
             if (balance >= upgradeCost) {
                 balance -= upgradeCost;
                 clickPower++;
-                upgradeCost = Math.floor(upgradeCost * 1.6);
+                upgradeCost = Math.floor(upgradeCost * 1.1);
                 tg.HapticFeedback.notificationOccurred('success');
                 updateUI();
             } else {
