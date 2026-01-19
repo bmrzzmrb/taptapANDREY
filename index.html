@@ -71,18 +71,18 @@
 <body>
 
     <!-- Статистика -->
-    <div class="stats">💰 Монеты: <span id="balance">0</span></div>
-    <div class="stats">⚡ Уровень: <span id="clickLvl">1</span></div>
+    <div class="stats"> Нажал(а) на яйца: <span id="balance">0</span></div>
+    <div class="stats"> Уровень силы: <span id="clickLvl">1</span></div>
 
     <!-- Ваше фото вместо монеты -->
     <img src="https://raw.githubusercontent.com/bmrzzmrb/taptapANDREY/main/andrey.png" id="coin" onclick="clickCoin()">
 
     <!-- Кнопки для взаимодействия -->
     <div class="grid">
-        <button class="neon-btn" onclick="upgradeClick()">Прокачка<br><small id="upCost">100</small></button>
+        <button class="neon-btn" onclick="upgradeClick()">Сила клика<br><small id="upCost">100</small></button>
         <button class="neon-btn" onclick="buyDouble()">x2 Клик (1ч)<br><small>10k</small></button>
         <button class="neon-btn" onclick="buyShield()">Щит (1ч)<br><small>100k</small></button>
-        <button class="neon-btn" onclick="saveToCloud()">💾 Сохранить</button>
+        <button class="neon-btn" onclick="saveToCloud()">Сохранить</button>
     </div>
 
     <script>
@@ -110,7 +110,7 @@
             if (!shieldActive && Math.random() < 0.15) {
                 let loss = Math.floor(balance * 0.05);
                 balance -= loss;
-                tg.showAlert("Мяч в лицо! Потеряно: " + loss);
+                tg.showAlert("Мяч в еблище, долбаеб! Потеряно: " + loss);
             } else {
                 balance += (clickPower * multiplier);
             }
@@ -118,7 +118,7 @@
 
             // Вибрация при клике
             if (navigator.vibrate) {
-                navigator.vibrate(200);  // Вибрация 200 мс
+                navigator.vibrate(500);  // Вибрация 200 мс
             }
         }
 
@@ -137,7 +137,7 @@
             tg.CloudStorage.setItem('coins', balance.toString());
             tg.CloudStorage.setItem('lvl', clickPower.toString());
             tg.CloudStorage.setItem('cost', upgradeCost.toString());
-            tg.showScanQrPopup({text: "Сохранено в облако!"});
+            tg.showScanQrPopup({text: "Сохранено в облако"});
             setTimeout(() => tg.closeScanQrPopup(), 1000);
         }
 
