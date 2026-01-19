@@ -39,6 +39,7 @@
             cursor: pointer;
             object-fit: cover;
             transition: transform 0.1s;
+            z-index: 10; /* Убедитесь, что изображение находится выше остальных элементов */
         }
         #coin:active { transform: scale(0.95); }
         
@@ -51,6 +52,7 @@
     <div class="stats">Монеты: <span id="balance">0</span></div>
     <div class="stats">Уровень клика: <span id="clickLvl">1</span></div>
     
+    <!-- Замените "ВАШЕ_ПРЯМОЕ_ФОТО_URL" на правильный URL изображения -->
     <img src="ВАШЕ_ПРЯМОЕ_ФОТО_URL" id="coin" onclick="clickCoin()">
 
     <div class="shop">
