@@ -3,87 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neon Clicker</title>
+    <title>Neon Clicker 2026</title>
+    <!-- Подключаем скрипт Телеграма -->
+    <script src="https://telegram.org"></script>
     <style>
         body {
-            background: #000;
-            color: white;
-            font-family: 'Arial', sans-serif;
-            text-align: center;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
             background: radial-gradient(circle, #200000 0%, #000 100%);
+            color: white; font-family: sans-serif; text-align: center; margin: 0;
+            display: flex; flex-direction: column; align-items: center; min-height: 100vh;
         }
         .neon-btn {
             background: linear-gradient(45deg, #ff0000, #8b0000);
-            border: 2px solid #ff4d4d;
-            border-radius: 15px;
-            color: white;
-            padding: 10px 20px;
-            margin: 10px;
-            box-shadow: 0 0 15px #ff0000;
-            cursor: pointer;
-            transition: 0.3s;
+            border: 2px solid #ff4d4d; border-radius: 15px; color: white;
+            padding: 12px; margin: 5px; width: 160px;
+            box-shadow: 0 0 10px #ff0000; cursor: pointer; font-weight: bold;
         }
-        .neon-btn:hover { box-shadow: 0 0 25px #ff4d4d; }
-        
         #coin {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            background: #ff0000;
-            box-shadow: 0 0 30px #ff0000;
-            margin: 30px;
-            cursor: pointer;
-            transition: transform 0.1s;
-            z-index: 10; /* Убедитесь, что изображение находится выше остальных элементов */
+            width: 220px; height: 220px; border-radius: 50%;
+            border: 4px solid #ff0000; box-shadow: 0 0 25px #ff0000;
+            margin: 20px; cursor: pointer; object-fit: cover;
         }
-        #coin:active { transform: scale(0.95); }
-        
-        .stats { font-size: 24px; margin: 10px; text-shadow: 0 0 10px #ff0000; }
-        .shop { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .stats { font-size: 22px; margin: 10px; color: #fff; text-shadow: 0 0 10px #f00; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     </style>
 </head>
 <body>
 
-    <div class="stats">Монеты: <span id="balance">0</span></div>
-    <div class="stats">Уровень клика: <span id="clickLvl">1</span></div>
+    <div class="stats">💰 Монеты: <span id="balance">0</span></div>
+    <div class="stats">⚡ Уровень: <span id="clickLvl">1</span></div>
     
-    <!-- Замените "ВАШЕ_ПРЯМОЕ_ФОТО_URL" на правильный URL изображения -->
-    <img src="ВАШЕ_ПРЯМОЕ_ФОТО_URL" id="coin" onclick="clickCoin()">
+    <!-- Ваше фото из первого сообщения -->
+    <img src="https://ltdfoto.ru" id="coin" onclick="clickCoin()">
 
-    <div class="shop">
-        <button class="neon-btn" onclick="upgradeClick()">Прокачка<br><small id="upCost">След.ур: 100</small></button>
-        <button class="neon-btn" onclick="buyDouble()">x2 Клик (1 час)<br><small>10k монет</small></button>
-        <button class="neon-btn" onclick="buyShield()">Щит от мяча (1 час)<br><small>100k монет</small></button>
-        <button class="neon-btn" onclick="showLeaderboard()">Лидерборд</button>
-        <button class="neon-btn" onclick="saveData()">Сохранить</button>
+    <div class="grid">
+        <button class="neon-btn" onclick="upgradeClick()">Прокачка<br><small id="upCost">100</small></button>
+        <button class="neon-btn" onclick="buyDouble()">x2 Клик (1ч)<br><small>10k</small></button>
+        <button class="neon-btn" onclick="buyShield()">Щит (1ч)<br><small>100k</small></button>
+        <button class="neon-btn" onclick="saveToCloud()">💾 Сохранить</button>
     </div>
 
     <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand(); // Развернуть на весь экран
+
         let balance = 0;
         let clickPower = 1;
         let upgradeCost = 100;
         let multiplier = 1;
         let shieldActive = false;
 
+        // ЗАГРУЗКА ДАННЫХ ПРИ СТАРТЕ
+        tg.CloudStorage.getItems(['coins', 'lvl', 'cost'], (err, values) => {
+            if (!err) {
+                if (values.coins) balance = parseInt(values.coins);
+                if (values.lvl) clickPower = parseInt(values.lvl);
+                if (values.cost) upgradeCost = parseInt(values.cost);
+                updateUI();
+            }
+        });
+
         function clickCoin() {
-            // Шанс 15% на "Мяч в лицо"
             if (!shieldActive && Math.random() < 0.15) {
                 let loss = Math.floor(balance * 0.05);
                 balance -= loss;
-                alert("Мяч в лицо! Потеряно: " + loss);
+                tg.showAlert("Мяч в лицо! Потеряно: " + loss);
             } else {
                 balance += (clickPower * multiplier);
             }
-
-            // Вибрация при клике
-            if (navigator.vibrate) {
-                navigator.vibrate(100); // Вибрация на 100 мс
-            }
-
             updateUI();
         }
 
@@ -91,51 +77,28 @@
             if (balance >= upgradeCost) {
                 balance -= upgradeCost;
                 clickPower++;
-                upgradeCost = Math.floor(upgradeCost * 1.5);
+                upgradeCost = Math.floor(upgradeCost * 1.6);
                 updateUI();
             }
         }
 
-        function buyDouble() {
-            if (balance >= 10000) {
-                balance -= 10000;
-                multiplier = 2;
-                setTimeout(() => multiplier = 1, 3600000);
-                alert("Клик удвоен на час!");
-            }
-        }
-
-        function buyShield() {
-            if (balance >= 100000) {
-                balance -= 100000;
-                shieldActive = true;
-                setTimeout(() => shieldActive = false, 3600000);
-                alert("Защита активирована на час!");
-            }
+        function saveToCloud() {
+            tg.CloudStorage.setItem('coins', balance.toString());
+            tg.CloudStorage.setItem('lvl', clickPower.toString());
+            tg.CloudStorage.setItem('cost', upgradeCost.toString());
+            tg.showScanQrPopup({text: "Сохранено в облако!"}); // Просто как уведомление
+            setTimeout(() => tg.closeScanQrPopup(), 1000);
         }
 
         function updateUI() {
             document.getElementById('balance').innerText = Math.floor(balance);
             document.getElementById('clickLvl').innerText = clickPower;
-            document.getElementById('upCost').innerText = "След.ур: " + upgradeCost;
+            document.getElementById('upCost').innerText = "Цена: " + upgradeCost;
         }
 
-        function saveData() {
-            // Интеграция с сервером для сохранения данных
-            fetch('/save', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({coins: balance, lvl: clickPower})
-            })
-            .then(response => response.json())
-            .then(data => {
-                alert('Данные успешно сохранены!');
-            })
-            .catch(error => {
-                console.error('Ошибка при сохранении:', error);
-                alert('Ошибка при сохранении данных!');
-            });
-        }
+        // Бонусы (упрощенно)
+        function buyDouble() { if(balance >= 10000) { balance-=10000; multiplier=2; setTimeout(()=>multiplier=1, 3600000); updateUI(); } }
+        function buyShield() { if(balance >= 100000) { balance-=100000; shieldActive=true; setTimeout(()=>shieldActive=false, 3600000); updateUI(); } }
     </script>
 </body>
 </html>
