@@ -4,90 +4,122 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Neon Clicker 2026</title>
-    <!-- Подключаем скрипт для Telegram WebApp -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://telegram.org"></script>
     <style>
         body {
-            background: radial-gradient(circle, #200000 0%, #000 100%);
+            background: radial-gradient(circle, #2b0000 0%, #000 100%);
             color: white;
-            font-family: sans-serif;
+            font-family: 'Segoe UI', Roboto, sans-serif;
             text-align: center;
             margin: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
+            overflow: hidden;
+            user-select: none;
         }
 
-        /* Стиль для кнопки */
-        .neon-btn {
-            background: linear-gradient(45deg, #ff0000, #8b0000);
-            border: 2px solid #ff4d4d;
-            border-radius: 15px;
-            color: white;
-            padding: 12px;
-            margin: 5px;
-            width: 160px;
-            box-shadow: 0 0 10px #ff0000;
-            cursor: pointer;
+        .stats-container {
+            margin-top: 20px;
+            background: rgba(255, 0, 0, 0.1);
+            padding: 15px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.1);
+        }
+
+        .stats {
+            font-size: 26px;
             font-weight: bold;
+            text-shadow: 0 0 10px #ff0000;
+            margin: 5px;
         }
 
-        /* Стиль для фото (замена монеты) */
+        /* Контейнер для фото-монеты */
+        .coin-wrapper {
+            margin: 40px 0;
+            position: relative;
+        }
+
         #coin {
-            width: 220px;
-            height: 220px;
+            width: 240px;
+            height: 240px;
             border-radius: 50%;
-            border: 4px solid #ff0000;
-            box-shadow: 0 0 25px #ff0000;
-            margin: 20px;
+            border: 5px solid #ff0000;
+            box-shadow: 0 0 30px #ff0000, inset 0 0 20px #ff0000;
             cursor: pointer;
             object-fit: cover;
-            transition: transform 0.3s ease;
+            transition: transform 0.1s ease;
+            display: block;
+            background-color: #1a0000; /* Цвет заглушки, пока грузится фото */
         }
 
-        /* Эффект при наведении на изображение */
-        #coin:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 50px #ff4d4d;
+        /* Эффект клика для смартфона */
+        #coin:active {
+            transform: scale(0.92);
+            box-shadow: 0 0 50px #ff0000, inset 0 0 30px #ff0000;
+            filter: brightness(1.2);
         }
 
-        /* Статистика */
-        .stats {
-            font-size: 22px;
-            margin: 10px;
-            color: #fff;
-            text-shadow: 0 0 10px #f00;
-        }
-
-        /* Сетка для кнопок */
         .grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            gap: 12px;
+            padding: 0 20px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .neon-btn {
+            background: linear-gradient(135deg, #ff0000 0%, #8b0000 100%);
+            border: 2px solid #ff4d4d;
+            border-radius: 12px;
+            color: white;
+            padding: 12px 5px;
+            font-size: 14px;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(255, 0, 0, 0.3);
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .neon-btn:active {
+            transform: translateY(2px);
+            filter: brightness(1.3);
+        }
+
+        small {
+            display: block;
+            font-size: 10px;
+            opacity: 0.8;
+            margin-top: 4px;
         }
     </style>
 </head>
 <body>
 
-    <!-- Статистика -->
-    <div class="stats"> Нажал(а) на яйца: <span id="balance">0</span></div>
-    <div class="stats"> Уровень силы: <span id="clickLvl">1</span></div>
+    <div class="stats-container">
+        <div class="stats">💰 <span id="balance">0</span></div>
+        <div class="stats" style="font-size: 16px; opacity: 0.9;">⚡ Уровень: <span id="clickLvl">1</span></div>
+    </div>
 
-    <!-- Ваше фото вместо монеты -->
-    <img src="https://raw.githubusercontent.com/bmrzzmrb/taptapANDREY/main/andrey.png" id="coin" onclick="clickCoin()">
+    <div class="coin-wrapper">
+        <!-- Ссылка на локальный файл в репозитории -->
+        <img src="andrey.png" id="coin" onclick="clickCoin()" alt="Andrey Coin">
+    </div>
 
-    <!-- Кнопки для взаимодействия -->
     <div class="grid">
-        <button class="neon-btn" onclick="upgradeClick()">Сила клика<br><small id="upCost">100</small></button>
-        <button class="neon-btn" onclick="buyDouble()">x2 Клик (1ч)<br><small>10k</small></button>
-        <button class="neon-btn" onclick="buyShield()">Щит (1ч)<br><small>100k</small></button>
-        <button class="neon-btn" onclick="saveToCloud()">Сохранить</button>
+        <button class="neon-btn" onclick="upgradeClick()">Прокачка<br><small id="upCost">След: 100</small></button>
+        <button class="neon-btn" onclick="buyDouble()">x2 Клик<br><small>10,000</small></button>
+        <button class="neon-btn" onclick="buyShield()">Щит (1ч)<br><small>100,000</small></button>
+        <button class="neon-btn" onclick="saveToCloud()">💾 Сохранить</button>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
-        tg.expand(); // Развернуть на весь экран
+        tg.expand();
+        tg.enableClosingConfirmation();
 
         let balance = 0;
         let clickPower = 1;
@@ -95,7 +127,7 @@
         let multiplier = 1;
         let shieldActive = false;
 
-        // ЗАГРУЗКА ДАННЫХ ПРИ СТАРТЕ
+        // Загрузка данных
         tg.CloudStorage.getItems(['coins', 'lvl', 'cost'], (err, values) => {
             if (!err) {
                 if (values.coins) balance = parseInt(values.coins);
@@ -105,65 +137,60 @@
             }
         });
 
-        // Функция клика по изображению
         function clickCoin() {
+            // Шанс 15% на "Мяч в лицо"
             if (!shieldActive && Math.random() < 0.15) {
                 let loss = Math.floor(balance * 0.05);
                 balance -= loss;
-                tg.showAlert("Мяч в еблище, долбаеб! Потеряно: " + loss);
+                tg.HapticFeedback.notificationOccurred('error');
+                tg.showAlert("⚽ МЯЧ В ЛИЦО! Потеряно: " + loss + " монет");
             } else {
                 balance += (clickPower * multiplier);
+                tg.HapticFeedback.impactOccurred('medium');
             }
             updateUI();
-
-            // Вибрация при клике
-            if (navigator.vibrate) {
-                navigator.vibrate(500);  // Вибрация 200 мс
-            }
         }
 
-        // Прокачка клика
         function upgradeClick() {
             if (balance >= upgradeCost) {
                 balance -= upgradeCost;
                 clickPower++;
                 upgradeCost = Math.floor(upgradeCost * 1.6);
+                tg.HapticFeedback.notificationOccurred('success');
                 updateUI();
+            } else {
+                tg.showAlert("Недостаточно монет!");
             }
         }
 
-        // Сохранение в облако
         function saveToCloud() {
             tg.CloudStorage.setItem('coins', balance.toString());
             tg.CloudStorage.setItem('lvl', clickPower.toString());
             tg.CloudStorage.setItem('cost', upgradeCost.toString());
-            tg.showScanQrPopup({text: "Сохранено в облако"});
-            setTimeout(() => tg.closeScanQrPopup(), 1000);
+            tg.HapticFeedback.impactOccurred('light');
+            tg.showScanQrPopup({text: "Прогресс сохранен!"});
+            setTimeout(() => tg.closeScanQrPopup(), 800);
         }
 
-        // Обновление интерфейса
         function updateUI() {
-            document.getElementById('balance').innerText = Math.floor(balance);
+            document.getElementById('balance').innerText = Math.floor(balance).toLocaleString();
             document.getElementById('clickLvl').innerText = clickPower;
-            document.getElementById('upCost').innerText = "Цена: " + upgradeCost;
+            document.getElementById('upCost').innerText = "Цена: " + upgradeCost.toLocaleString();
         }
 
-        // Бонусы (упрощенно)
         function buyDouble() { 
             if(balance >= 10000) { 
-                balance -= 10000; 
-                multiplier = 2; 
-                setTimeout(() => multiplier = 1, 3600000); 
-                updateUI(); 
+                balance -= 10000; multiplier = 2; 
+                setTimeout(() => { multiplier = 1; tg.showAlert("Бонус x2 закончился!"); }, 3600000); 
+                updateUI(); tg.showAlert("Удвоение на 1 час активировано!");
             } 
         }
 
         function buyShield() { 
             if(balance >= 100000) { 
-                balance -= 100000; 
-                shieldActive = true; 
-                setTimeout(() => shieldActive = false, 3600000); 
-                updateUI(); 
+                balance -= 100000; shieldActive = true; 
+                setTimeout(() => { shieldActive = false; tg.showAlert("Щит отключен!"); }, 3600000); 
+                updateUI(); tg.showAlert("Защита от мяча на 1 час активирована!");
             } 
         }
     </script>
