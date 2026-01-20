@@ -535,14 +535,14 @@ function hitBoss() {
     if (Math.random() < 0.05 && bossHp > 0) {
         const heal = Math.floor(bossMaxHp * 0.1);
         bossHp = Math.min(bossHp + heal, bossMaxHp);
-        tg.showAlert('😈 Босс восстановил HP! ОН ЮЗАЕТ ЗАНЫ');
+        tg.showAlert('Босс восстановил HP! ОН ЮЗАЕТ ЗАНЫ');
     }
 
     // 💰 15% КРАЖА
     if (Math.random() < 0.02 && balance > 0) {
         const stolen = Math.max(1, Math.floor(balance * 0.05));
         balance = Math.max(0, balance - stolen);
-        tg.showAlert('💰 Босс спиздил ' + stolen + ' яиц!');
+        tg.showAlert('Босс спиздил ' + stolen + ' яиц!');
         updateUI();
     }
 
@@ -552,7 +552,7 @@ function hitBoss() {
         (bossHp / bossMaxHp * 100) + '%';
 
     if (bossHp <= 0) {
-        endBossFight(true, '🏆 Победа! +' + bossReward);
+        endBossFight(true, 'Победа! +' + bossReward);
     }
 }
 
