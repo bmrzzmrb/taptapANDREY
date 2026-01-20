@@ -442,6 +442,13 @@ let saveTimeout = null;
 let upgradePriceStep = 10;
 let x2UpgradeCost = 50000000;
 
+// ===== АНТИ-АВТОКЛИКЕР =====
+let clickTimestamps = [];
+let clickBlockedUntil = 0;
+
+const MAX_CLICKS_PER_SEC = 10;
+const BLOCK_TIME_MS = 5 * 60 * 1000; // 5 минут
+
 // ===== БОСС =====
 let bossHp = 0;
 let bossMaxHp = 0;
@@ -450,11 +457,27 @@ let fightTimer = null;
 let timeLeft = 0;
 let inBossFight = false;
 
+function formatNumber(num) {
+    return Math.floor(num).toLocaleString('de-DE');
+}
+
 // ===== ВИБРАЦИЯ =====
 function vibrate(type = 'light') {
     if (tg.HapticFeedback) {
         tg.HapticFeedback.impactOccurred(type);
     }
+}
+
+function isClickBlocked() {
+    const now = Date.now();
+
+    if (now < clickBlockedUntil) {
+        const secondsLeft = Math.ceil((clickBlockedUntil - now) / 1000);
+        tg.showAlert('⛔ ПИДОРАС ОБНАРУЖЕН\nСоси хуй ' + secondsLeft + ' сек.');
+        return true;
+    }
+
+    return false;
 }
 
 // Умное сохранение (Локально + Облако)
@@ -464,6 +487,7 @@ function saveGame() {
         clickPower: clickPower,
         upgradeCost: upgradeCost,
         x2UpgradeCost: x2UpgradeCost,
+        clickBlockedUntil: clickBlockedUntil,
         lastSave: Date.now()
     };
 
@@ -491,6 +515,7 @@ function loadGame() {
         clickPower = d.clickPower || 1;
         upgradeCost = d.upgradeCost || 10;
         x2UpgradeCost = d.x2UpgradeCost || 50000000;
+        clickBlockedUntil = d.clickBlockedUntil || 0;
         updateUI();
     }
 
@@ -506,6 +531,7 @@ function loadGame() {
                     clickPower = cloud.clickPower;
                     upgradeCost = cloud.upgradeCost;
                     x2UpgradeCost = cloud.x2UpgradeCost;
+                    clickBlockedUntil = d.clickBlockedUntil;
                     updateUI();
                 }
             }
@@ -514,17 +540,39 @@ function loadGame() {
 }
 
 function updateUI() {
-    document.getElementById('balance').innerText = Math.floor(balance);
-    document.getElementById('clickLvl').innerText = clickPower;
-    document.getElementById('upgradeCost').innerText = upgradeCost;
-    document.getElementById('x2Cost').innerText = x2UpgradeCost;
+    document.getElementById('balance').innerText = formatNumber(balance);
+    document.getElementById('clickLvl').innerText = formatNumber(clickPower);
+    document.getElementById('upgradeCost').innerText = formatNumber(upgradeCost);
+
+    if (document.getElementById('x2Cost')) {
+        document.getElementById('x2Cost').innerText = formatNumber(x2UpgradeCost);
+    }
 }
 
 function clickCoin() {
+    const now = Date.now();
+
+    // ⛔ Если клики заблокированы
+    if (isClickBlocked()) return;
+
+    clickTimestamps = clickTimestamps.filter(t => now - t < 1000);
+    clickTimestamps.push(now);
+
+    // 🚨 Обнаружение автокликера
+    if (clickTimestamps.length > MAX_CLICKS_PER_SEC) {
+        clickBlockedUntil = now + BLOCK_TIME_MS;
+        clickTimestamps = [];
+
+        tg.showAlert('🚨 Обнаружен пидорас с кликером!\nКлики заблокированы на 5 минут.');
+        saveGame();
+        return;
+    }
+
+    // ✅ Обычный клик
     balance += clickPower;
     vibrate('light');
     updateUI();
-    saveGame(); 
+    saveGame();
 
     const img = document.getElementById('coin');
     img.style.transform = 'scale(0.95)';
