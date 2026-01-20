@@ -1,198 +1,593 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Neon Clicker 2026</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        body {
-            background: radial-gradient(circle, #2b0000 0%, #000 100%);
-            color: white;
-            font-family: 'Times New Roman', Roboto, sans-serif;
-            text-align: center;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            overflow: hidden;
-            user-select: none;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Тапай яйца долбаеб</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-        .stats-container {
-            margin-top: 20px;
-            background: rgba(255, 0, 0, 0.1);
-            padding: 15px;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 0, 0, 0.3);
-            box-shadow: 0 0 20px rgba(255, 0, 0, 0.1);
-        }
+<style>
+body {
+    background: radial-gradient(circle, #2b0000 0%, #000 100%);
+    color: white;
+    font-family: 'Times New Roman', Roboto, sans-serif;
+    text-align: center;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    user-select: none;
+}
 
-        .stats {
-            font-size: 26px;
-            font-weight: bold;
-            text-shadow: 0 0 10px #ff0000;
-            margin: 5px;
-        }
+.stats-container {
+    margin-top: 20px;
+    background: rgba(255,0,0,0.1);
+    padding: 15px;
+    border-radius: 20px;
+    width: 85%;
+}
 
-        /* Контейнер для фото-монеты */
-        .coin-wrapper {
-            margin: 40px 0;
-            position: relative;
-        }
+.stats { font-size: 22px; font-weight: bold; }
 
-        #coin {
-            width: 240px;
-            height: 240px;
-            border-radius: 50%;
-            border: 5px solid #ff0000;
-            box-shadow: 0 0 30px #ff0000, inset 0 0 20px #ff0000;
-            cursor: pointer;
-            object-fit: cover;
-            transition: transform 0.1s ease;
-            display: block;
-            background-color: #1a0000; /* Цвет заглушки, пока грузится фото */
-        }
+.nav-tabs {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
 
-        /* Эффект клика для смартфона */
-        #coin:active {
-            transform: scale(0.92);
-            box-shadow: 0 0 50px #ff0000, inset 0 0 30px #ff0000;
-            filter: brightness(1.2);
-        }
+.tab-btn {
+    padding: 10px 25px;
+    border-radius: 12px;
+    border: 1px solid #ff0000;
+    background: #1a0000;
+    color: white;
+    cursor: pointer;
+}
 
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            padding: 0 20px;
-            width: 100%;
-            max-width: 400px;
-        }
+.tab-btn.active { background: #ff0000; }
 
-        .neon-btn {
-            background: linear-gradient(135deg, #ff0000 0%, #8b0000 100%);
-            border: 2px solid #ff4d4d;
-            border-radius: 12px;
-            color: white;
-            padding: 12px 5px;
-            font-size: 14px;
-            font-weight: bold;
-            box-shadow: 0 4px 10px rgba(255, 0, 0, 0.3);
-            cursor: pointer;
-            text-transform: uppercase;
-        }
+.screen {
+    display: none;
+    width: 100%;
+    align-items: center;
+    flex-direction: column;
+}
 
-        .neon-btn:active {
-            transform: translateY(2px);
-            filter: brightness(1.3);
-        }
+.active-screen { display: flex; }
 
-        small {
-            display: block;
-            font-size: 10px;
-            opacity: 0.8;
-            margin-top: 4px;
-        }
-    </style>
+#coin, #boss-img {
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    border: 4px solid #ff0000;
+    box-shadow: 0 0 30px #ff0000;
+    cursor: pointer;
+    object-fit: cover;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    width: 90%;
+    max-width: 400px;
+    margin-top: 20px;
+}
+
+.neon-btn {
+    background: linear-gradient(135deg, #ff0000, #8b0000);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    padding: 12px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.boss-card {
+    background: rgba(60,0,0,0.5);
+    border-radius: 15px;
+    padding: 15px;
+    margin: 10px;
+    width: 85%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+}
+
+.boss-info small {
+    display: block;
+    opacity: 0.85;
+}
+
+.hp-container {
+    width: 80%;
+    height: 25px;
+    background: #220000;
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 10px 0;
+}
+
+#hp-bar {
+    height: 100%;
+    background: linear-gradient(90deg, red, pink);
+}
+
+#timer {
+    font-size: 20px;
+    margin-top: 10px;
+    color: #ffaaaa;
+}
+</style>
 </head>
+
 <body>
 
-    <div class="stats-container">
-        <div class="stats">Натапал(а) яиц: <span id="balance">0</span></div>
-        <div class="stats" style="font-size: 16px; opacity: 0.9;">⚡ Сила клика: <span id="clickLvl">1</span></div>
-    </div>
+<div class="stats-container">
+    <div class="stats">Натыкал(а) по яйцам: <span id="balance">0</span></div>
+    <div class="stats">⚡ Сила клика: <span id="clickLvl">1</span></div>
 
-    <div class="coin-wrapper">
-        <!-- Ссылка на локальный файл в репозитории -->
-        <img src="andrey.png" id="coin" onclick="clickCoin()" alt="Andrey Coin">
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="showScreen('main', this)">ГЛАВНАЯ</button>
+        <button class="tab-btn" onclick="showScreen('boss-list', this)">БОССЫ</button>
     </div>
+</div>
 
+<!-- ГЛАВНАЯ -->
+<div id="main" class="screen active-screen">
+    <img id="coin" src="https://raw.githubusercontent.com/bmrzzmrb/TapikTap/main/andrey.png" onclick="clickCoin()">
     <div class="grid">
-        <button class="neon-btn" onclick="upgradeClick()">Прокачка<br><small id="upCost">След: 100</small></button>
-        <button class="neon-btn" onclick="buyDouble()">x2 Клик<br><small>10,000</small></button>
-        <button class="neon-btn" onclick="buyShield()">Щит (1ч)<br><small>100,000</small></button>
-        <button class="neon-btn" onclick="saveToCloud()">💾 Сохранить</button>
+        <button class="neon-btn" onclick="upgradeClick()">
+            УЛУЧШИТЬ СИЛУ<br>
+            <small>Цена: <span id="upgradeCost">10</span></small>
+        </button>
+        <button class="neon-btn" onclick="saveGame()">💾 СОХРАНИТЬ</button>
+    </div>
+</div>
+
+<div id="boss-list" class="screen">
+    <div class="boss-card">
+        <div class="boss-info">
+            <b>Ходилка бродилка</b>
+            <small>HP: 20 000</small>
+            <small>Вход: 1 000</small>
+            <small>Награда: 15 000</small>
+            <small>Появляется внезапно. Уходит без объяснений.</small>
+        </div>
+        <button class="neon-btn" onclick="startBossFight(
+            'Ходилка бродилка',20000,15000,1000,
+            'https://raw.githubusercontent.com/bmrzzmrb/TapikTap/main/hodilkabrodilka.jpg'
+        )">В БОЙ</button>
+    </div>
+    <div class="boss-card">
+        <div class="boss-info">
+            <b>Мерседес</b>
+            <small>HP: 600</small>
+            <small>Вход: 3 000</small>
+            <small>Награда: 15 000</small>
+            <small>Учитель-каратель. Звонок для неё — не закон.</small>
+        </div>
+        <button class="neon-btn" onclick="startBossFight(
+            'Мерседес',600,15000,3000,
+            'https://raw.githubusercontent.com/bmrzzmrb/TapikTap/main/mersedes.jpg'
+        )">В БОЙ</button>
+    </div>
+    <div class="boss-card">
+        <div class="boss-info">
+            <b>Физик</b>
+            <small>HP: 1 200</small>
+            <small>Вход: 8 000</small>
+            <small>Награда: 30 000</small>
+            <small>Заставит страдать даже отличников.</small>
+        </div>
+        <button class="neon-btn" onclick="startBossFight(
+            'Физик',1200,30000,8000,
+            'https://raw.githubusercontent.com/bmrzzmrb/TapikTap/main/fizik.jpg'
+        )">В БОЙ</button>
+    </div>
+    <div class="boss-card">
+        <div class="boss-info">
+            <b>Агаааааа</b>
+            <small>HP: 2 000</small>
+            <small>Вход: 5 000</small>
+            <small>Награда: 30000</small>
+            <small>Ор слышен за три района.</small>
+        </div>
+        <button class="neon-btn" onclick="startBossFight(
+            'Агаааааа',2000,30000,5000,
+            'https://raw.githubusercontent.com/bmrzzmrb/TapikTap/main/agaaa.jpg'
+        )">В БОЙ</button>
+    </div>
+    <div class="boss-card">
+        <div class="boss-info">
+            <b>Иистоооорииик</b>
+            <small>HP: 25000</small>
+            <small>Вход: 30 000</small>
+            <small>Награда: 250 000</small>
+            <small>Фа Фа Фа шнейне ватафа.</small>
+        </div>
+        <button class="neon-btn" onclick="startBossFight(
+            'Иистоооорииик',25000,250000,30000,
+            'https://raw.githubusercontent.com/bmrzzmrb/TapikTap/main/istorik.jpg'
+        )">В БОЙ</button>
+    </div>
+    <div class="boss-card">
+        <div class="boss-info">
+            <b>Жанна Киска</b>
+            <small>HP: 100000</small>
+            <small>Вход: 60 000</small>
+            <small>Награда: 500 000</small>
+            <small>Моральный урон x10.</small>
+        </div>
+        <button class="neon-btn" onclick="startBossFight(
+            'Жанна Киска',100000,500000,60000,
+            'https://raw.githubusercontent.com/bmrzzmrb/TapikTap/main/jannakiska.jpg'
+        )">В БОЙ</button>
+    </div>
+    <div class="boss-card">
+        <div class="boss-info">
+            <b>Мох-Ирева</b>
+            <small>HP: 100 000</small>
+            <small>Вход: 120 000</small>
+            <small>Награда: 1 000 000</small>
+            <small>Бьёт словом сильнее кулака.</small>
+        </div>
+        <button class="neon-btn" onclick="startBossFight(
+            'Мох-Ирева',100000,1000000,120000,
+            'https://raw.githubusercontent.com/bmrzzmrb/TapikTap/main/moxireva.jpg'
+        )">В БОЙ</button>
+    </div>
+    <div class="boss-card">
+        <div class="boss-info">
+            <b>Дикая троица</b>
+            <small>HP: 100 000</small>
+            <small>Вход: 250 000</small>
+            <small>Награда: 750 000</small>
+            <small>Бьют втроём. Думают ноль секунд.</small>
+        </div>
+        <button class="neon-btn" onclick="startBossFight(
+            'Дикая троица',100000,750000,250000,
+            'https://raw.githubusercontent.com/bmrzzmrb/TapikTap/main/troica.jpg'
+        )">В БОЙ</button>
+    </div>
+    <div class="boss-card">
+        <div class="boss-info">
+            <b>Мишук</b>
+            <small>HP: 100 000</small>
+            <small>Вход: 500 000</small>
+            <small>Награда: 2 000 000</small>
+            <small>Помнит оценки. Никогда не забывает.</small>
+        </div>
+        <button class="neon-btn" onclick="startBossFight(
+            'Мишук',100000,2000000,500000,
+            'https://raw.githubusercontent.com/bmrzzmrb/TapikTap/main/mishyk.jpg'
+        )">В БОЙ</button>
+    </div>
+    <div class="boss-card">
+        <div class="boss-info">
+            <b>ШЕВА</b>
+            <small>HP: 100 000</small>
+            <small>Вход: 500 000</small>
+            <small>Награда: 2 000 000</small>
+            <small>До свидания, долбаеб.</small>
+        </div>
+        <button class="neon-btn" onclick="startBossFight(
+            'ШЕВА',100000,2000000,500000,
+            'https://raw.githubusercontent.com/bmrzzmrb/TapikTap/main/sheva.jpg'
+        )">В БОЙ</button>
+    </div>
+    <div class="boss-card">
+        <div class="boss-info">
+            <b>ИГОРЬ</b>
+            <small>HP: 100 000</small>
+            <small>Вход: 100 000</small>
+            <small>Награда: 1 000 000</small>
+            <small>Хороший человек.</small>
+        </div>
+        <button class="neon-btn" onclick="startBossFight(
+            'ИГОРЬ',100000,1000000,100000,
+            'https://raw.githubusercontent.com/bmrzzmrb/TapikTap/main/igor.jpg'
+        )">В БОЙ</button>
+    </div>
+    <div class="boss-card">
+        <div class="boss-info">
+            <b>Артемий</b>
+            <small>HP: 1 000 000</small>
+            <small>Вход: 100 000</small>
+            <small>Награда: 10 000 000</small>
+            <small>Крутой пацан</small>
+        </div>
+        <button class="neon-btn" onclick="startBossFight(
+            'Артемий',1000000,10000000,100000,
+            'https://raw.githubusercontent.com/bmrzzmrb/TapikTap/main/tema.jpg'
+        )">В БОЙ</button>
+    </div>
+    <div class="boss-card">
+        <div class="boss-info">
+            <b>Дементий</b>
+            <small>HP: 100 000</small>
+            <small>Вход: 100 000</small>
+            <small>Награда: 1 000 000</small>
+            <small>Люблю тебя пупсик.</small>
+        </div>
+        <button class="neon-btn" onclick="startBossFight(
+            'Дементий',100000,1000000,100000,
+            'https://raw.githubusercontent.com/bmrzzmrb/TapikTap/main/demaa.jpg'
+        )">В БОЙ</button>
+    </div>
+    <div class="boss-card">
+        <div class="boss-info">
+            <b>Данечка</b>
+            <small>HP: 100 000</small>
+            <small>Вход: 100 000</small>
+            <small>Награда: 1 000 000</small>
+            <small>Я не знаю,зачем он надел шапку летом.</small>
+        </div>
+        <button class="neon-btn" onclick="startBossFight(
+            'Данечка',100000,1000000,100000,
+            'https://raw.githubusercontent.com/bmrzzmrb/TapikTap/main/danya.jpg'
+        )">В БОЙ</button>
+    </div>
+    <div class="boss-card">
+        <div class="boss-info">
+            <b>БИГБООООН</b>
+            <small>HP: 1 000 000</small>
+            <small>Вход: 100 000</small>
+            <small>Награда: 5 000 000</small>
+            <small>Слабая версия толстого любимого нашего друга.</small>
+        </div>
+        <button class="neon-btn" onclick="startBossFight(
+            'БИГБООООН',1000000,5000000,100000,
+            'https://raw.githubusercontent.com/bmrzzmrb/TapikTap/main/bigbon.jpg'
+        )">В БОЙ</button>
+    </div>
+    <div class="boss-card">
+        <div class="boss-info">
+            <b>БИГБООООН В ПРАЙМЕ</b>
+            <small>HP: 100 000 000</small>
+            <small>Вход: 100 000</small>
+            <small>Награда: 50 000 000</small>
+            <small>ОН В ПРАЙМЕ И КУШАЕТ ПЕЧЕНЬЕ,ВАХТЕР ПРОКАЗНИК.</small>
+        </div>
+        <button class="neon-btn" onclick="startBossFight(
+            'БИГБООООН В ПРАЙМЕ',100000000,50000000,100000,
+            'https://raw.githubusercontent.com/bmrzzmrb/TapikTap/main/bigbontwo.jpg'
+        )">В БОЙ</button>
+    </div>
+    <div class="boss-card">
+        <div class="boss-info">
+            <b>ЧОПОР</b>
+            <small>HP: 300 000 000</small>
+            <small>Вход: 50 000 000</small>
+            <small>Награда: 100 000 000</small>
+            <small>11 Здравствуйте. МЯЯЯЯЯЧ СЮДАААААА.</small>
+        </div>
+        <button class="neon-btn" onclick="startBossFight(
+            'ЧОПОР',300000000,100000000,50000000,
+            'https://raw.githubusercontent.com/bmrzzmrb/TapikTap/main/chopor.jpg'
+        )">В БОЙ</button>
     </div>
 
-    <script>
-        let tg = window.Telegram.WebApp;
-        tg.expand();
-        tg.enableClosingConfirmation();
+</div>
 
-        let balance = 0;
-        let clickPower = 1;
-        let upgradeCost = 100;
-        let multiplier = 1;
-        let shieldActive = false;
+<!-- ЭКРАН БОЯ -->
+<div id="boss-battle" class="screen">
+    <h2 id="boss-name">БОСС</h2>
+    <div id="timer">⏱️ 60</div>
+    <div class="hp-container"><div id="hp-bar"></div></div>
+    <img id="boss-img" onclick="hitBoss()">
+</div>
 
-        // Загрузка данных
-        tg.CloudStorage.getItems(['coins', 'lvl', 'cost'], (err, values) => {
-            if (!err) {
-                if (values.coins) balance = parseInt(values.coins);
-                if (values.lvl) clickPower = parseInt(values.lvl);
-                if (values.cost) upgradeCost = parseInt(values.cost);
-                updateUI();
+<script>
+let tg = window.Telegram.WebApp;
+tg.expand();
+
+// ===== СОСТОЯНИЕ ИГРЫ =====
+let balance = 0;
+let clickPower = 1;
+let upgradeCost = 10;
+let saveTimeout = null;
+let upgradePriceStep = 10;
+
+// ===== БОСС =====
+let bossHp = 0;
+let bossMaxHp = 0;
+let bossReward = 0;
+let fightTimer = null;
+let timeLeft = 0;
+let inBossFight = false;
+
+// ===== ВИБРАЦИЯ =====
+function vibrate(type = 'light') {
+    if (tg.HapticFeedback) {
+        tg.HapticFeedback.impactOccurred(type);
+    }
+}
+
+// Умное сохранение (Локально + Облако)
+function saveGame() {
+    const data = {
+        balance: balance,
+        clickPower: clickPower,
+        upgradeCost: upgradeCost,
+        lastSave: Date.now()
+    };
+
+    // 1. Сразу в LocalStorage (для ПК)
+    localStorage.setItem('eggGameSave', JSON.stringify(data));
+
+    // 2. В Облако ТГ с задержкой (чтобы не забанили за частые запросы)
+    if (tg.isVersionAtLeast('6.9')) {
+        clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(() => {
+            tg.CloudStorage.setItem('gameData', JSON.stringify(data), (err) => {
+                if (err) console.error("Cloud save error", err);
+            });
+        }, 1000); 
+    }
+}
+
+// Загрузка
+function loadGame() {
+    // Сначала из памяти браузера
+    const local = localStorage.getItem('eggGameSave');
+    if (local) {
+        const d = JSON.parse(local);
+        balance = d.balance || 0;
+        clickPower = d.clickPower || 1;
+        upgradeCost = d.upgradeCost || 10;
+        updateUI();
+    }
+
+    // Потом из облака ТГ (если там данные новее)
+    if (tg.isVersionAtLeast('6.9')) {
+        tg.CloudStorage.getItem('gameData', (err, value) => {
+            if (!err && value) {
+                const cloud = JSON.parse(value);
+                const localData = local ? JSON.parse(local) : { lastSave: 0 };
+                
+                if (cloud.lastSave > localData.lastSave) {
+                    balance = cloud.balance;
+                    clickPower = cloud.clickPower;
+                    upgradeCost = cloud.upgradeCost;
+                    updateUI();
+                }
             }
         });
+    }
+}
 
-        function clickCoin() {
-            // Шанс 1-3% на "Мяч в лицо"
-            if (!shieldActive && Math.random() < 0.03) { // Вероятность попадания мяча 1-3%
-                let loss = Math.floor(balance * 0.05);
-                balance -= loss;
-                tg.HapticFeedback.notificationOccurred('error');
-                tg.showAlert("⚽ МЯЧ В ЕБЛИЩЕ! Потеряно: " + loss + " монет");
-            } else {
-                balance += (clickPower * multiplier);
-                tg.HapticFeedback.impactOccurred('medium');
-            }
-            updateUI();
-        }
+function updateUI() {
+    document.getElementById('balance').innerText = Math.floor(balance);
+    document.getElementById('clickLvl').innerText = clickPower;
+    document.getElementById('upgradeCost').innerText = upgradeCost;
+}
 
-        function upgradeClick() {
-            if (balance >= upgradeCost) {
-                balance -= upgradeCost;
-                clickPower++;
-                upgradeCost = Math.floor(upgradeCost * 1.1);
-                tg.HapticFeedback.notificationOccurred('success');
-                updateUI();
-            } else {
-                tg.showAlert("Недостаточно монет!");
-            }
-        }
+function clickCoin() {
+    balance += clickPower;
+    vibrate('light');
+    updateUI();
+    saveGame(); 
 
-        function saveToCloud() {
-            tg.CloudStorage.setItem('coins', balance.toString());
-            tg.CloudStorage.setItem('lvl', clickPower.toString());
-            tg.CloudStorage.setItem('cost', upgradeCost.toString());
-            tg.HapticFeedback.impactOccurred('light');
-            tg.showScanQrPopup({text: "Прогресс сохранен!"});
-            setTimeout(() => tg.closeScanQrPopup(), 800);
-        }
+    const img = document.getElementById('coin');
+    img.style.transform = 'scale(0.95)';
+    setTimeout(() => img.style.transform = 'scale(1)', 50);
+}
 
-        function updateUI() {
-            document.getElementById('balance').innerText = Math.floor(balance).toLocaleString();
-            document.getElementById('clickLvl').innerText = clickPower;
-            document.getElementById('upCost').innerText = "Цена: " + upgradeCost.toLocaleString();
-        }
+function upgradeClick() {
+    if (balance >= upgradeCost) {
+        balance -= upgradeCost;
+        clickPower += 1; 
+        upgradeCost = upgradeCost + upgradePriceStep;
+        vibrate('medium');
+        updateUI();
+        saveGame();
+    } else {
+        tg.showAlert('Мало яиц!');
+    }
+}
+// ===== СТАРТ БОССА =====
+function startBossFight(name, hp, reward, cost, img) {
+    if (balance < cost) {
+        tg.showAlert('Нужно ' + cost + ' яиц!');
+        return;
+    }
 
-        function buyDouble() { 
-            if(balance >= 10000) { 
-                balance -= 10000; multiplier = 2; 
-                setTimeout(() => { multiplier = 1; tg.showAlert("Бонус x2 закончился!"); }, 3600000); 
-                updateUI(); tg.showAlert("Удвоение на 1 час активировано!");
-            } 
-        }
+    balance -= cost;
+    updateUI();
 
-        function buyShield() { 
-            if(balance >= 100000) { 
-                balance -= 100000; shieldActive = true; 
-                setTimeout(() => { shieldActive = false; tg.showAlert("Щит отключен!"); }, 3600000); 
-                updateUI(); tg.showAlert("Защита от мяча на 1 час активирована!");
-            } 
+    bossHp = hp;
+    bossMaxHp = hp;
+    bossReward = reward;
+    timeLeft = 60;
+    inBossFight = true;
+
+    document.getElementById('boss-name').innerText = name;
+    document.getElementById('boss-img').src = img;
+    document.getElementById('hp-bar').style.width = '100%';
+    document.getElementById('timer').innerText = '⏱️ 60';
+
+    showScreen('boss-battle');
+
+    clearInterval(fightTimer);
+    fightTimer = setInterval(() => {
+        timeLeft--;
+        document.getElementById('timer').innerText = '⏱️ ' + timeLeft;
+
+        if (timeLeft <= 0) {
+            endBossFight(false, '⏱️ Время вышло!');
         }
-    </script>
+    }, 1000);
+}
+
+// ===== УДАР ПО БОССУ =====
+function hitBoss() {
+    if (!inBossFight) return;
+
+    // УРОН
+    bossHp -= clickPower;
+    if (bossHp < 0) bossHp = 0;
+
+    // 🔮 5% ЛЕЧЕНИЕ
+    if (Math.random() < 0.05 && bossHp > 0) {
+        const heal = Math.floor(bossMaxHp * 0.1);
+        bossHp = Math.min(bossHp + heal, bossMaxHp);
+        tg.showAlert('😈 Босс восстановил HP!');
+    }
+
+    // 💰 15% КРАЖА
+    if (Math.random() < 0.15 && balance > 0) {
+        const stolen = Math.max(1, Math.floor(balance * 0.05));
+        balance = Math.max(0, balance - stolen);
+        tg.showAlert('💰 Босс украл ' + stolen + ' яиц!');
+        updateUI();
+    }
+
+    vibrate('light');
+
+    document.getElementById('hp-bar').style.width =
+        (bossHp / bossMaxHp * 100) + '%';
+
+    if (bossHp <= 0) {
+        endBossFight(true, '🏆 Победа! +' + bossReward);
+    }
+}
+
+// ===== КОНЕЦ БОЯ =====
+function endBossFight(win, message) {
+    clearInterval(fightTimer);
+    inBossFight = false;
+
+    if (win) {
+        balance += bossReward;
+        saveGame();
+    }
+
+    tg.showAlert(message);
+    showScreen('main');
+    updateUI();
+}
+
+// ===== ЭКРАНЫ =====
+function showScreen(id, btn) {
+    document.querySelectorAll('.screen').forEach(s =>
+        s.classList.remove('active-screen')
+    );
+    document.getElementById(id).classList.add('active-screen');
+
+    if (btn) {
+        document.querySelectorAll('.tab-btn').forEach(b =>
+            b.classList.remove('active')
+        );
+        btn.classList.add('active');
+    }
+}
+
+// Старт
+loadGame();
+</script>
 </body>
 </html>
