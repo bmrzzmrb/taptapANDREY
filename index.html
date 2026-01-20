@@ -175,13 +175,13 @@ body {
     <div class="nav-tabs">
         <button class="tab-btn active" onclick="showScreen('main', this)">ГЛАВНАЯ</button>
         <button class="tab-btn" onclick="showScreen('boss-list', this)">БОССЫ</button>
+        <button class="tab-btn" onclick="showScreen('gamble', this)">КАЗИНО</button>
     </div>
 </div>
 
-<!-- ГЛАВНАЯ -->
+<!-- ЭКРАН ГЛАВНАЯ -->
 <div id="main" class="screen active-screen">
     <img id="coin" src="https://raw.githubusercontent.com/bmrzzmrb/TapikTap/main/andrey.png" onclick="clickCoin()">
-
     <div class="grid">
         <button class="neon-btn" onclick="upgradeClick()">
             ➕ СИЛА +1<br>
@@ -195,6 +195,33 @@ body {
 
         <button class="neon-btn" onclick="saveGame()">💾 СОХРАНИТЬ</button>
     </div>
+</div>
+
+<!-- ЭКРАН АЗАРТ -->
+<div id="gamble" class="screen">
+    <h2>КАЗИНО</h2>
+    <p>Выбери ставку и цвет</p>
+
+    <!-- СТАВКИ -->
+    <div class="grid">
+        <button class="neon-btn" onclick="setBet(10000)">10.000</button>
+        <button class="neon-btn" onclick="setBetPercent(25)">25%</button>
+        <button class="neon-btn" onclick="setBetPercent(50)">50%</button>
+        <button class="neon-btn" onclick="setAllIn()">ALL IN</button>
+    </div>
+
+    <p style="margin-top:15px;">
+        Ставка: <b><span id="currentBet">0</span></b>
+    </p>
+
+    <!-- ЦВЕТА -->
+    <div class="grid">
+        <button class="neon-btn" style="background:#ff0000" onclick="playGamble('red')">🔴</button>
+        <button class="neon-btn" style="background:#00aa00" onclick="playGamble('green')">🟢</button>
+        <button class="neon-btn" style="background:#0000ff" onclick="playGamble('blue')">🔵</button>
+    </div>
+
+    <p id="gambleResult" style="margin-top:15px;"></p>
 </div>
 
 <div id="boss-list" class="screen">
@@ -466,6 +493,66 @@ function vibrate(type = 'light') {
     if (tg.HapticFeedback) {
         tg.HapticFeedback.impactOccurred(type);
     }
+}
+
+// ===== АЗАРТ =====
+let currentBet = 0;
+
+function setBet(amount) {
+    currentBet = Math.min(amount, balance);
+    updateGambleUI();
+}
+
+function setBetPercent(percent) {
+    currentBet = Math.floor(balance * (percent / 100));
+    updateGambleUI();
+}
+
+function setAllIn() {
+    currentBet = balance;
+    updateGambleUI();
+}
+
+function updateGambleUI() {
+    document.getElementById('currentBet').innerText = formatNumber(currentBet);
+}
+
+function playGamble(color) {
+    if (currentBet <= 0) {
+        tg.showAlert('Ставка не выбрана');
+        return;
+    }
+
+    if (currentBet > balance) {
+        tg.showAlert('Недостаточно яиц');
+        return;
+    }
+
+    const colors = ['red', 'green', 'blue'];
+    const result = colors[Math.floor(Math.random() * colors.length)];
+
+    balance -= currentBet;
+
+    let text = 'Выпал цвет: ';
+
+    if (result === 'red') text += '🔴';
+    if (result === 'green') text += '🟢';
+    if (result === 'blue') text += '🔵';
+
+    if (result === color) {
+        const win = currentBet * 2;
+        balance += win;
+        text += '<br><b>🎉 Победа! +' + formatNumber(win) + '</b>';
+    } else {
+        text += '<br><b>❌ Проигрыш</b>';
+    }
+
+    currentBet = 0;
+    document.getElementById('gambleResult').innerHTML = text;
+
+    updateUI();
+    updateGambleUI();
+    saveGame();
 }
 
 function isClickBlocked() {
