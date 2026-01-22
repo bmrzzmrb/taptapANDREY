@@ -164,6 +164,22 @@ body {
     opacity: 0.85;
     margin-top: 4px;
 }
+#boss-img {
+    width: 230px;       /* такой же размер, как яйцо */
+    height: 230px;
+    border-radius: 50%;
+    border: 4px solid rgba(255,50,50,0.9);
+    object-fit: cover;
+    margin: 20px 0;
+    cursor: pointer;
+    box-shadow:
+        0 0 35px rgba(255,0,0,0.9),
+        0 0 70px rgba(255,0,0,0.4);
+    transition: transform 0.12s;
+}
+#boss-img:active {
+    transform: scale(0.93);
+}
 /* ====== HP ====== */
 .hp-container {
     width: 85%;
@@ -196,7 +212,6 @@ body {
 }
 </style>
 </head>
-
 <body>
 
 <div class="stats-container">
