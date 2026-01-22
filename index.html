@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Тапай яйца долбаеб</title>
+<title>bmrzzz</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
@@ -164,6 +164,19 @@ body {
     color: #ffb3b3;
     text-shadow: 0 0 10px rgba(255, 80, 80, 0.8);
 }
+.casino-section {
+    width: 100%;
+    max-width: 420px;
+    margin-top: 25px;
+    padding-top: 15px;
+    border-top: 2px dashed rgba(255,0,0,0.5);
+}
+
+.casino-title {
+    font-size: 20px;
+    margin-bottom: 10px;
+    text-shadow: 0 0 10px rgba(255,0,0,0.8);
+}
 </style>
 </head>
 <body>
@@ -192,21 +205,33 @@ body {
             💥 СИЛА x2<br>
             <small>Цена: <span id="x2Cost">50000000</span></small>
         </button>
-
+        <button class="neon-btn" onclick="upgradeMax()">
+            🔥 Сила<br>
+            <small>Купить силу на все деньги</small>
+        </button>        
         <button class="neon-btn" onclick="saveGame()">💾 СОХРАНИТЬ</button>
+        <button id="musicBtn" class="neon-btn" onclick="toggleMusic()">🎵 Вкл/Выкл</button>
     </div>
 </div>
 
+<!-- Аудио (скрыто) -->
+<audio id="bgMusic" loop preload="auto">
+    <source src="https://raw.githubusercontent.com/bmrzzmrb/TapikTap/main/music.mp3" type="audio/mpeg">
+</audio>
+
 <!-- ЭКРАН АЗАРТ -->
 <div id="gamble" class="screen">
-    <h2>КАЗИНО</h2>
-    <p>Выбери ставку и цвет</p>
+    <h2>🎰 КАЗИНО</h2>
+    <p>Выбери сколько депнуть хочешь</p>
 
     <!-- СТАВКИ -->
     <div class="grid">
-        <button class="neon-btn" onclick="setBet(10000)">10.000</button>
-        <button class="neon-btn" onclick="setBetPercent(25)">25%</button>
+        <button class="neon-btn" onclick="setBetPercent(5)">5%</button>
+        <button class="neon-btn" onclick="setBetPercent(10)">10%</button>
+        <button class="neon-btn" onclick="setBetPercent(15)">15%</button>
+        <button class="neon-btn" onclick="setBetPercent(35)">35%</button>
         <button class="neon-btn" onclick="setBetPercent(50)">50%</button>
+        <button class="neon-btn" onclick="setBetPercent(75)">75%</button>
         <button class="neon-btn" onclick="setAllIn()">ALL IN</button>
     </div>
 
@@ -214,222 +239,279 @@ body {
         Ставка: <b><span id="currentBet">0</span></b>
     </p>
 
-    <!-- ЦВЕТА -->
-    <div class="grid">
-        <button class="neon-btn" style="background:#ff0000" onclick="playGamble('red')">🔴</button>
-        <button class="neon-btn" style="background:#00aa00" onclick="playGamble('green')">🟢</button>
-        <button class="neon-btn" style="background:#0000ff" onclick="playGamble('blue')">🔵</button>
+    <!-- ===== УГАДАЙ ЦВЕТ ===== -->
+    <div class="casino-section">
+        <div class="casino-title">🎨 УГАДАЙ ЦВЕТ</div>
+        <div class="grid">
+            <button class="neon-btn" style="background:#ff0000" onclick="playGamble('red')">🔴</button>
+            <button class="neon-btn" style="background:#00aa00" onclick="playGamble('green')">🟢</button>
+            <button class="neon-btn" style="background:#0000ff" onclick="playGamble('blue')">🔵</button>
+        </div>
+    </div>
+
+    <!-- ===== ОДНОРУКИЙ БАНДИТ ===== -->
+    <div class="casino-section">
+        <div class="casino-title">🎰 ОДНОРУКИЙ БАНДИТ</div>
+        <button class="neon-btn" onclick="playSlots()">КРУТИТЬ</button>
+        <p id="slotResult"></p>
+    </div>
+
+    <!-- ===== 21 ===== -->
+    <div class="casino-section">
+        <div class="casino-title">🃏 21</div>
+        <button class="neon-btn" onclick="startBlackjack()">ВЗЯТЬ КАРТЫ</button>
+        <button class="neon-btn" onclick="blackjackStand()">СТОП</button>
+        <p id="blackjackInfo"></p>
     </div>
 
     <p id="gambleResult" style="margin-top:15px;"></p>
 </div>
 
 <div id="boss-list" class="screen">
+
     <div class="boss-card">
         <div class="boss-info">
             <b>Ходилка бродилка</b>
-            <small>HP: 20 000</small>
+            <small>HP: 3 000</small>
             <small>Вход: 1 000</small>
             <small>Награда: 15 000</small>
             <small>Появляется внезапно. Уходит без объяснений.</small>
         </div>
         <button class="neon-btn" onclick="startBossFight(
-            'Ходилка бродилка',20000,15000,1000,
+            'Ходилка бродилка',3000,15000,1000,
             'https://raw.githubusercontent.com/bmrzzmrb/TapikTap/main/hodilkabrodilka.jpg'
         )">В БОЙ</button>
     </div>
+
     <div class="boss-card">
         <div class="boss-info">
             <b>Мерседес</b>
-            <small>HP: 600</small>
+            <small>HP: 800</small>
             <small>Вход: 3 000</small>
             <small>Награда: 15 000</small>
             <small>Учитель-каратель. Звонок для неё — не закон.</small>
         </div>
         <button class="neon-btn" onclick="startBossFight(
-            'Мерседес',600,15000,3000,
+            'Мерседес',800,15000,3000,
             'https://raw.githubusercontent.com/bmrzzmrb/TapikTap/main/mersedes.jpg'
         )">В БОЙ</button>
     </div>
+
     <div class="boss-card">
         <div class="boss-info">
             <b>Физик</b>
-            <small>HP: 1 200</small>
+            <small>HP: 1 500</small>
             <small>Вход: 8 000</small>
             <small>Награда: 30 000</small>
             <small>Заставит страдать даже отличников.</small>
         </div>
         <button class="neon-btn" onclick="startBossFight(
-            'Физик',1200,30000,8000,
+            'Физик',1500,30000,8000,
             'https://raw.githubusercontent.com/bmrzzmrb/TapikTap/main/fizik.jpg'
         )">В БОЙ</button>
     </div>
+
     <div class="boss-card">
         <div class="boss-info">
             <b>Агаааааа</b>
-            <small>HP: 2 000</small>
+            <small>HP: 2 500</small>
             <small>Вход: 5 000</small>
-            <small>Награда: 300 000 000</small>
+            <small>Награда: 30 000</small>
             <small>Ор слышен за три района.</small>
         </div>
         <button class="neon-btn" onclick="startBossFight(
-            'Агаааааа',2000,300000000,5000,
+            'Агаааааа',2500,30000,5000,
             'https://raw.githubusercontent.com/bmrzzmrb/TapikTap/main/agaaa.jpg'
         )">В БОЙ</button>
     </div>
+
     <div class="boss-card">
         <div class="boss-info">
             <b>Иистоооорииик</b>
-            <small>HP: 25000</small>
+            <small>HP: 12 000</small>
             <small>Вход: 30 000</small>
             <small>Награда: 250 000</small>
             <small>Фа Фа Фа шнейне ватафа.</small>
         </div>
         <button class="neon-btn" onclick="startBossFight(
-            'Иистоооорииик',25000,250000,30000,
+            'Иистоооорииик',12000,250000,30000,
             'https://raw.githubusercontent.com/bmrzzmrb/TapikTap/main/istorik.jpg'
         )">В БОЙ</button>
     </div>
+
     <div class="boss-card">
         <div class="boss-info">
             <b>Жанна Киска</b>
-            <small>HP: 100000</small>
+            <small>HP: 25 000</small>
             <small>Вход: 60 000</small>
             <small>Награда: 500 000</small>
             <small>Моральный урон x10.</small>
         </div>
         <button class="neon-btn" onclick="startBossFight(
-            'Жанна Киска',100000,500000,60000,
+            'Жанна Киска',25000,500000,60000,
             'https://raw.githubusercontent.com/bmrzzmrb/TapikTap/main/jannakiska.jpg'
         )">В БОЙ</button>
     </div>
+
     <div class="boss-card">
         <div class="boss-info">
             <b>Мох-Ирева</b>
-            <small>HP: 100 000</small>
+            <small>HP: 40 000</small>
             <small>Вход: 120 000</small>
             <small>Награда: 1 000 000</small>
             <small>Бьёт словом сильнее кулака.</small>
         </div>
         <button class="neon-btn" onclick="startBossFight(
-            'Мох-Ирева',100000,1000000,120000,
+            'Мох-Ирева',40000,1000000,120000,
             'https://raw.githubusercontent.com/bmrzzmrb/TapikTap/main/moxireva.jpg'
         )">В БОЙ</button>
     </div>
+
     <div class="boss-card">
         <div class="boss-info">
             <b>Дикая троица</b>
-            <small>HP: 100 000</small>
+            <small>HP: 80 000</small>
             <small>Вход: 250 000</small>
             <small>Награда: 750 000</small>
             <small>Бьют втроём. Думают ноль секунд.</small>
         </div>
         <button class="neon-btn" onclick="startBossFight(
-            'Дикая троица',100000,750000,250000,
+            'Дикая троица',80000,750000,250000,
             'https://raw.githubusercontent.com/bmrzzmrb/TapikTap/main/troica.jpg'
         )">В БОЙ</button>
     </div>
+
     <div class="boss-card">
         <div class="boss-info">
             <b>Мишук</b>
-            <small>HP: 100 000</small>
+            <small>HP: 120 000</small>
             <small>Вход: 500 000</small>
             <small>Награда: 2 000 000</small>
             <small>Помнит оценки. Никогда не забывает.</small>
         </div>
         <button class="neon-btn" onclick="startBossFight(
-            'Мишук',100000,2000000,500000,
+            'Мишук',120000,2000000,500000,
             'https://raw.githubusercontent.com/bmrzzmrb/TapikTap/main/mishyk.jpg'
         )">В БОЙ</button>
     </div>
+
     <div class="boss-card">
         <div class="boss-info">
             <b>ШЕВА</b>
-            <small>HP: 100 000</small>
+            <small>HP: 150 000</small>
             <small>Вход: 500 000</small>
             <small>Награда: 2 000 000</small>
             <small>До свидания, долбаеб.</small>
         </div>
         <button class="neon-btn" onclick="startBossFight(
-            'ШЕВА',100000,2000000,500000,
+            'ШЕВА',150000,2000000,500000,
             'https://raw.githubusercontent.com/bmrzzmrb/TapikTap/main/sheva.jpg'
         )">В БОЙ</button>
     </div>
-    <div class="boss-card">
-        <div class="boss-info">
-            <b>ИГОРЬ</b>
-            <small>HP: 100 000</small>
-            <small>Вход: 100 000</small>
-            <small>Награда: 1 000 000</small>
-            <small>Хороший человек.</small>
-        </div>
-        <button class="neon-btn" onclick="startBossFight(
-            'ИГОРЬ',100000,1000000,100000,
-            'https://raw.githubusercontent.com/bmrzzmrb/TapikTap/main/igor.jpg'
-        )">В БОЙ</button>
-    </div>
+
     <div class="boss-card">
         <div class="boss-info">
             <b>Артемий</b>
-            <small>HP: 1 000 000</small>
+            <small>HP: 300 000</small>
             <small>Вход: 100 000</small>
             <small>Награда: 10 000 000</small>
             <small>Крутой пацан</small>
         </div>
         <button class="neon-btn" onclick="startBossFight(
-            'Артемий',1000000,10000000,100000,
+            'Артемий',300000,10000000,100000,
             'https://raw.githubusercontent.com/bmrzzmrb/TapikTap/main/tema.jpg'
+        )">В БОЙ</button>
+    </div>
+    
+    <div class="boss-card">
+        <div class="boss-info">
+            <b>Игорюня</b>
+            <small>HP: 750 000</small>
+            <small>Вход: 100 000</small>
+            <small>Награда: 10 000 000</small>
+            <small>Крутой пацан</small>
+        </div>
+        <button class="neon-btn" onclick="startBossFight(
+            'Игорюня',750000,10000000,100000,
+            'https://raw.githubusercontent.com/bmrzzmrb/TapikTap/main/igor.jpg'
         )">В БОЙ</button>
     </div>
     <div class="boss-card">
         <div class="boss-info">
-            <b>Дементий</b>
-            <small>HP: 100 000</small>
+            <b>ДЕМЕНТИЙ</b>
+            <small>HP: 300 000</small>
             <small>Вход: 100 000</small>
-            <small>Награда: 1 000 000</small>
-            <small>Люблю тебя пупсик.</small>
+            <small>Награда: 10 000 000</small>
+            <small>Люблю тебя пупсик</small>
         </div>
         <button class="neon-btn" onclick="startBossFight(
-            'Дементий',100000,1000000,100000,
+            'ДЕМЕНТИЙ',300000,10000000,100000,
             'https://raw.githubusercontent.com/bmrzzmrb/TapikTap/main/demaa.jpg'
         )">В БОЙ</button>
     </div>
     <div class="boss-card">
         <div class="boss-info">
-            <b>БИГБООООН</b>
-            <small>HP: 1 000 000</small>
+            <b>БИГБОН</b>
+            <small>HP: 300 000</small>
             <small>Вход: 100 000</small>
-            <small>Награда: 5 000 000</small>
-            <small>Слабая версия толстого любимого нашего друга.</small>
+            <small>Награда: 10 000 000</small>
+            <small>НЕ В ПРАЙМЕ ОН</small>
         </div>
         <button class="neon-btn" onclick="startBossFight(
-            'БИГБООООН',1000000,5000000,100000,
+            'БИГБОН',300000,10000000,100000,
             'https://raw.githubusercontent.com/bmrzzmrb/TapikTap/main/bigbon.jpg'
         )">В БОЙ</button>
     </div>
     <div class="boss-card">
         <div class="boss-info">
             <b>БИГБООООН В ПРАЙМЕ</b>
-            <small>HP: 100 000 000</small>
+            <small>HP: 2 000 000</small>
             <small>Вход: 100 000</small>
             <small>Награда: 50 000 000</small>
-            <small>ОН В ПРАЙМЕ И КУШАЕТ ПЕЧЕНЬЕ,ВАХТЕР ПРОКАЗНИК.</small>
+            <small>ОН В ПРАЙМЕ И КУШАЕТ ПЕЧЕНЬЕ.</small>
         </div>
         <button class="neon-btn" onclick="startBossFight(
-            'БИГБООООН В ПРАЙМЕ',100000000,50000000,100000,
+            'БИГБООООН В ПРАЙМЕ',2000000,50000000,100000,
             'https://raw.githubusercontent.com/bmrzzmrb/TapikTap/main/bigbontwo.jpg'
         )">В БОЙ</button>
     </div>
     <div class="boss-card">
         <div class="boss-info">
+            <b>ПРИНЦЕССА</b>
+            <small>HP: 2 000 000</small>
+            <small>Вход: 100 000</small>
+            <small>Награда: 50 000 000</small>
+            <small>ГОТОВИТ БАЛАНДУ.</small>
+        </div>
+        <button class="neon-btn" onclick="startBossFight(
+            'ПРИНЦЕССА',2000000,50000000,100000,
+            'https://raw.githubusercontent.com/bmrzzmrb/TapikTap/main/princessa.jpg'
+        )">В БОЙ</button>
+    </div>
+
+    <div class="boss-card">
+        <div class="boss-info">
             <b>ЧОПОР</b>
             <small>HP: 300 000 000</small>
             <small>Вход: 50 000 000</small>
-            <small>Награда: 100 000 000</small>
-            <small>11 Здравствуйте. МЯЯЯЯЯЧ СЮДАААААА.</small>
+            <small>Награда: 9 000 000 000</small>
+            <small>МЯЯЯЯЯЧ СЮДАААААА.</small>
         </div>
         <button class="neon-btn" onclick="startBossFight(
-            'ЧОПОР',300000000,100000000,50000000,
+            'ЧОПОР',300000000,9000000000,50000000,
+            'https://raw.githubusercontent.com/bmrzzmrb/TapikTap/main/chopor.jpg'
+        )">В БОЙ</button>
+    </div>
+    <div class="boss-card">
+        <div class="boss-info">
+            <b>ЧОПОР В ПРАЙМЕ</b>
+            <small>HP: 3 000 000 000 000 000 000 000</small>
+            <small>Вход: 50 000 000</small>
+            <small>Награда: 999 000 000 000</small>
+            <small>МЯЯЯЯЯЧ СЮДАААААА.</small>
+        </div>
+        <button class="neon-btn" onclick="startBossFight(
+            'ЧОПОР В ПРАЙМЕ',3000000000000000000000,999000000000,50000000,
             'https://raw.githubusercontent.com/bmrzzmrb/TapikTap/main/chopor.jpg'
         )">В БОЙ</button>
     </div>
@@ -460,7 +542,7 @@ let x2UpgradeCost = 50000000;
 let clickTimestamps = [];
 let clickBlockedUntil = 0;
 
-const MAX_CLICKS_PER_SEC = 25;
+const MAX_CLICKS_PER_SEC = 15;
 const BLOCK_TIME_MS = 5 * 60 * 1000; // 5 минут
 
 // ===== БОСС =====
@@ -542,6 +624,91 @@ function playGamble(color) {
     saveGame();
 }
 
+function playSlots() {
+    if (currentBet <= 0 || currentBet > balance) {
+        tg.showAlert('Ставка не выбрана');
+        return;
+    }
+
+    balance -= currentBet;
+
+    const symbols = ['🍒', '🍋', '🔔', '💎'];
+    const a = symbols[Math.floor(Math.random()*symbols.length)];
+    const b = symbols[Math.floor(Math.random()*symbols.length)];
+    const c = symbols[Math.floor(Math.random()*symbols.length)];
+
+    let text = a + ' | ' + b + ' | ' + c;
+
+    if (a === b && b === c) {
+        const win = currentBet * 5;
+        balance += win;
+        text += `<br><b>🎉 ДЖЕКПОТ +${formatNumber(win)}</b>`;
+    } else if (a === b || b === c || a === c) {
+        const win = currentBet * 2;
+        balance += win;
+        text += `<br><b>✅ Выигрыш +${formatNumber(win)}</b>`;
+    } else {
+        text += `<br><b>❌ Проигрыш</b>`;
+    }
+
+    document.getElementById('slotResult').innerHTML = text;
+    currentBet = 0;
+    updateUI();
+    updateGambleUI();
+    saveGame();
+}
+
+let playerScore = 0;
+let dealerScore = 0;
+let blackjackActive = false;
+
+function drawCard() {
+    return Math.floor(Math.random() * 10) + 2;
+}
+
+function startBlackjack() {
+    if (currentBet <= 0 || currentBet > balance) {
+        tg.showAlert('Ставка не выбрана');
+        return;
+    }
+
+    balance -= currentBet;
+    playerScore = drawCard() + drawCard();
+    dealerScore = drawCard();
+    blackjackActive = true;
+
+    updateBlackjackInfo();
+}
+
+function blackjackStand() {
+    if (!blackjackActive) return;
+
+    dealerScore += drawCard();
+
+    let text = '';
+    if (playerScore > 21) {
+        text = '❌ Перебор';
+    } else if (dealerScore > 21 || playerScore > dealerScore) {
+        const win = currentBet * 2;
+        balance += win;
+        text = '🎉 Победа +' + formatNumber(win);
+    } else {
+        text = '❌ Проигрыш';
+    }
+
+    blackjackActive = false;
+    currentBet = 0;
+    document.getElementById('blackjackInfo').innerHTML += `<br><b>${text}</b>`;
+    updateUI();
+    updateGambleUI();
+    saveGame();
+}
+
+function updateBlackjackInfo() {
+    document.getElementById('blackjackInfo').innerHTML =
+        `Ты: ${playerScore}<br>Дилер: ${dealerScore}`;
+}
+
 function isClickBlocked() {
     const now = Date.now();
 
@@ -552,6 +719,26 @@ function isClickBlocked() {
     }
 
     return false;
+}
+
+function upgradeMax() {
+    let bought = 0;
+
+    while (balance >= upgradeCost) {
+        balance -= upgradeCost;
+        clickPower += 1;
+        upgradeCost += upgradePriceStep;
+        bought++;
+    }
+
+    if (bought > 0) {
+        vibrate('heavy');
+        tg.showAlert('🔥 Куплено уровней: ' + bought);
+        updateUI();
+        saveGame();
+    } else {
+        tg.showAlert('❌ Недостаточно яиц');
+    }
 }
 
 // Умное сохранение (Локально + Облако)
@@ -620,6 +807,41 @@ function updateUI() {
 
     if (document.getElementById('x2Cost')) {
         document.getElementById('x2Cost').innerText = formatNumber(x2UpgradeCost);
+    }
+}
+
+let musicOn = false;
+const bgMusic = document.getElementById('bgMusic');
+const musicBtn = document.getElementById('musicBtn');
+
+// важно
+bgMusic.volume = 0.5;
+bgMusic.muted = true; // стартуем заглушённым
+
+function toggleMusic() {
+    if (!musicOn) {
+        bgMusic.muted = false;
+
+        const playPromise = bgMusic.play();
+        if (playPromise !== undefined) {
+            playPromise
+                .then(() => {
+                    musicOn = true;
+                    musicBtn.innerText = '🔊 Музыка ВКЛ';
+                    musicBtn.style.background = 'linear-gradient(135deg, #00ff00, #007700)';
+                    musicBtn.style.boxShadow = '0 0 25px #00ff00';
+                })
+                .catch(err => {
+                    console.log('Play error:', err);
+                    tg.showAlert('❌ Нажми ещё раз для запуска музыки');
+                });
+        }
+    } else {
+        bgMusic.pause();
+        musicOn = false;
+        musicBtn.innerText = '🎵 Музыка ВЫКЛ';
+        musicBtn.style.background = 'linear-gradient(135deg, #ff0000, #7a0000)';
+        musicBtn.style.boxShadow = '0 0 25px rgba(255,0,0,0.9)';
     }
 }
 
@@ -727,7 +949,7 @@ function hitBoss() {
     }
 
     // 💰 15% КРАЖА
-    if (Math.random() < 0.02 && balance > 0) {
+    if (Math.random() < 0.0002 && balance > 0) {
         const stolen = Math.max(1, Math.floor(balance * 0.05));
         balance = Math.max(0, balance - stolen);
         tg.showAlert('Босс спиздил ' + stolen + ' яиц!');
